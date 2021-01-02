@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "api"
+version = "0.1.0"
+description = "Host report API"
+authors = ["kiriharu <kiriharu@yandex.ru>"]
+
+[tool.poetry.dependencies]
+python = "^3.8.2"
+Flask = "^1.1.2"
+gevent = "^20.12.1"
+requests = "^2.25.1"
+core = {path = "../core"}
+
+[tool.poetry.dev-dependencies]
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
