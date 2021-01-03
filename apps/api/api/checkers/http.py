@@ -1,10 +1,11 @@
 from core.coretypes import (
-    Response, HttpCheckerResponse,
-    ResponseStatus, HttpErrorCodes, ErrorPayload
+    Response, HttpCheckerResponse, APINodeInfo,
+    ResponseStatus, HttpErrorCodes, ErrorPayload,
 )
 from requests import Session
 from requests.exceptions import ConnectionError
 from .base import BaseChecker
+from api.config import NODE_NAME, NODE_LOCATION
 import time
 import re
 
@@ -29,12 +30,16 @@ class HttpChecker(BaseChecker):
             request = self.session.get(
                 url
             )
+        # TODO: requests.exceptions.InvalidURL failed to parse exception
         except ConnectionError:
             return Response(
                 status=ResponseStatus.ERROR,
                 payload=ErrorPayload(
                     message="Failed to establish a new connection",
-                    code=HttpErrorCodes.ConnectError
+                    code=HttpErrorCodes.ConnectError,
+                ),
+                node=APINodeInfo(
+                    name=NODE_NAME, location=NODE_LOCATION
                 )
             )
 
@@ -45,5 +50,8 @@ class HttpChecker(BaseChecker):
             payload=HttpCheckerResponse(
                 time=end_time - start_time,
                 status_code=request.status_code
+            ),
+            node=APINodeInfo(
+                name=NODE_NAME, location=NODE_LOCATION
             )
         )

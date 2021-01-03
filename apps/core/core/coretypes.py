@@ -28,9 +28,16 @@ class HttpCheckerResponse(Payload):
 
 
 @dataclass
+class APINodeInfo:
+    name: str
+    location: str
+
+
+@dataclass
 class Response:
     status: ResponseStatus
     payload: Payload
+    node: APINodeInfo
 
 
 @dataclass
