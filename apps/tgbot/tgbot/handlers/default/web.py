@@ -2,12 +2,13 @@ from aiogram.types import Message
 from typing import Optional
 from tgbot.handlers.helpers import check_int
 from tgbot.nodes import nodes
-import httpx
+from httpx import AsyncClient, Response
+from core.coretypes import ResponseStatus, HTTP_EMOJI
 
 help_message = """
 Использование:
  /web <hostname> <port> 
- /web <hostname>
+ /web <hostname> - автоматически выставит 80 порт
  
  Производит проверку хоста по протоколу HTTP.
 """
@@ -15,12 +16,24 @@ help_message = """
 invalid_port = """Неправильный порт!"""
 
 
-async def check_web(message: Message, host: str, port: Optional[int]):
-    if port is None:
-        port = 80
-    responses = []
+async def prepare_webcheck_message(response: Response) -> str:
+    # TODO: Use types from core!
+    message = ""
+    json_rsp = response.json()
+    status = json_rsp.get("status")
+    if status == ResponseStatus.OK:
+        status_code = json_rsp['payload']['status_code']
+        time = round(json_rsp['payload']['time'], 3)
+        message = f"Location, Town: {HTTP_EMOJI.get(status_code, None)} {status_code}, {time} сек."
+    if status == ResponseStatus.ERROR:
+        message = json_rsp['payload']['message']
+        message = f"Location, Town: ❌ {message}"
+    return message
+
+
+async def send_check_requests(host: str, port: int):
     for node in nodes:
-        async with httpx.AsyncClient() as client:
+        async with AsyncClient() as client:
             result = await client.get(
                 f"{node.address}/http", params=dict(
                     target=host,
@@ -28,10 +41,22 @@ async def check_web(message: Message, host: str, port: Optional[int]):
                     token=node.token
                 )
             )
-            await message.answer(result.json())
-            responses.append(result)
+        yield result
 
-    await message.answer(f"{host}:{port}")
+
+async def check_web(message: Message, host: str, port: Optional[int]):
+    if port is None:
+        port = 80
+    rsp_msg = await message.answer(f"Отчет о проверке хоста {host}:{port}...\n\n")
+    iter_keys = 1
+    async for res in send_check_requests(host, port):
+        # set typing status...
+        await message.bot.send_chat_action(message.chat.id, 'typing')
+
+        node_formatted_response = await prepare_webcheck_message(res)
+        rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n{iter_keys}. {node_formatted_response}")
+        iter_keys = iter_keys + 1
+    await rsp_msg.edit_text(rsp_msg.text + f"\n\nПроверка завершена!")
 
 
 async def web_cmd(msg: Message):
