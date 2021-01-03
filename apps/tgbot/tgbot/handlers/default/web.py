@@ -4,16 +4,17 @@ from tgbot.handlers.helpers import check_int
 from tgbot.nodes import nodes
 from httpx import AsyncClient, Response
 from core.coretypes import ResponseStatus, HTTP_EMOJI
+from datetime import datetime
 
-help_message = """
+web_help_message = """
+❓ Производит проверку хоста по протоколу HTTP.
+
 Использование:
- /web <hostname> <port> 
- /web <hostname> - автоматически выставит 80 порт
- 
- Производит проверку хоста по протоколу HTTP.
+ `/web <hostname> <port>` 
+ `/web <hostname>` - автоматически выставит 80 порт
 """
 
-invalid_port = """Неправильный порт!"""
+invalid_port = """❗Неправильный порт. Напишите /web чтобы увидеть справку к данному способу проверки."""
 
 
 async def prepare_webcheck_message(response: Response) -> str:
@@ -21,13 +22,16 @@ async def prepare_webcheck_message(response: Response) -> str:
     message = ""
     json_rsp = response.json()
     status = json_rsp.get("status")
+    location = json_rsp['node']['location']
     if status == ResponseStatus.OK:
         status_code = json_rsp['payload']['status_code']
         time = round(json_rsp['payload']['time'], 2)
-        message = f"Location, Town: {HTTP_EMOJI.get(status_code//100, '')} {status_code}, ⏰ {time} сек."
+        message = f"{location}:" \
+                  f"\n{HTTP_EMOJI.get(status_code//100, '')} {status_code}, ⏰ {time} сек."
     if status == ResponseStatus.ERROR:
         message = json_rsp['payload']['message']
-        message = f"Location, Town: ❌ {message}"
+        message = f"{location}: " \
+                  f"\n❌ {message}"
     return message
 
 
@@ -47,7 +51,10 @@ async def send_check_requests(host: str, port: int):
 async def check_web(message: Message, host: str, port: Optional[int]):
     if port is None:
         port = 80
-    rsp_msg = await message.answer(f"Отчет о проверке хоста {host}:{port}...\n\n")
+    rsp_msg = await message.answer(f"Отчет о проверке хоста:"
+                                   f"\n\n— Хост: {host}:{port}"
+                                   f"\n— Дата проверки: {datetime.now():%d.%m.%y в %H:%M} (MSK)"  # TODO: Get timezone
+                                   )
     iter_keys = 1  # because I can't use enumerate
     # using generators for magic...
     async for res in send_check_requests(host, port):
@@ -55,9 +62,9 @@ async def check_web(message: Message, host: str, port: Optional[int]):
         await message.bot.send_chat_action(message.chat.id, 'typing')
 
         node_formatted_response = await prepare_webcheck_message(res)
-        rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n{iter_keys}. {node_formatted_response}")
+        rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n\n{iter_keys}. {node_formatted_response}")
         iter_keys = iter_keys + 1
-    await rsp_msg.edit_text(rsp_msg.text + f"\n\nПроверка завершена!")
+    await rsp_msg.edit_text(rsp_msg.text + f"\n\nПроверка завершена❗")
 
 
 async def web_cmd(msg: Message):
@@ -66,11 +73,11 @@ async def web_cmd(msg: Message):
     # TODO: Maybe check it in separated function?
     args = msg.text.split(" ")
     if len(args) < 2:
-        return await msg.answer(help_message)
+        return await msg.answer(web_help_message, parse_mode="Markdown")
     if len(args) == 3:
         port = args[2]
         if not check_int(port):
-            return await msg.answer(invalid_port)
+            return await msg.answer(invalid_port, parse_mode="Markdown")
     host = args[1]
 
     await check_web(msg, host, port)
