@@ -23,8 +23,8 @@ async def prepare_webcheck_message(response: Response) -> str:
     status = json_rsp.get("status")
     if status == ResponseStatus.OK:
         status_code = json_rsp['payload']['status_code']
-        time = round(json_rsp['payload']['time'], 3)
-        message = f"Location, Town: {HTTP_EMOJI.get(status_code, None)} {status_code}, {time} сек."
+        time = round(json_rsp['payload']['time'], 2)
+        message = f"Location, Town: {HTTP_EMOJI.get(status_code//100, '')} {status_code}, ⏰ {time} сек."
     if status == ResponseStatus.ERROR:
         message = json_rsp['payload']['message']
         message = f"Location, Town: ❌ {message}"
@@ -48,7 +48,8 @@ async def check_web(message: Message, host: str, port: Optional[int]):
     if port is None:
         port = 80
     rsp_msg = await message.answer(f"Отчет о проверке хоста {host}:{port}...\n\n")
-    iter_keys = 1
+    iter_keys = 1  # because I can't use enumerate
+    # using generators for magic...
     async for res in send_check_requests(host, port):
         # set typing status...
         await message.bot.send_chat_action(message.chat.id, 'typing')
