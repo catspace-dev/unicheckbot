@@ -31,3 +31,9 @@ class HttpCheckerResponse(Payload):
 class Response:
     status: ResponseStatus
     payload: Payload
+
+
+@dataclass
+class APINode:
+    address: str
+    token: str
