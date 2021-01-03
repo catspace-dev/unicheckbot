@@ -37,3 +37,10 @@ class Response:
 class APINode:
     address: str
     token: str
+
+
+HTTP_EMOJI = {
+    200: "🆗",
+    404: "🔍",
+    500: "☠️",
+}
