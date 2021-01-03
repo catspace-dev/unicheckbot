@@ -1,6 +1,6 @@
 from core.coretypes import (
     Response, HttpCheckerResponse, APINodeInfo,
-    ResponseStatus, HttpErrorCodes, ErrorPayload,
+    ResponseStatus, ErrorCodes, ErrorPayload,
 )
 from requests import Session
 from requests.exceptions import ConnectionError
@@ -16,7 +16,8 @@ class HttpChecker(BaseChecker):
     default_schema_re = re.compile("^[hH][tT][tT][pP].*")
 
     def __init__(self, target: str, port: int):
-        super(HttpChecker, self).__init__(target, port)
+        super(HttpChecker, self).__init__(target)
+        self.port = port
         self.session = Session()
 
     def check(self) -> Response:
@@ -36,11 +37,9 @@ class HttpChecker(BaseChecker):
                 status=ResponseStatus.ERROR,
                 payload=ErrorPayload(
                     message="Failed to establish a new connection",
-                    code=HttpErrorCodes.ConnectError,
+                    code=ErrorCodes.ConnectError,
                 ),
-                node=APINodeInfo(
-                    name=NODE_NAME, location=NODE_LOCATION
-                )
+                node=self.node_info
             )
 
         end_time = time.time()
@@ -51,7 +50,5 @@ class HttpChecker(BaseChecker):
                 time=end_time - start_time,
                 status_code=request.status_code
             ),
-            node=APINodeInfo(
-                name=NODE_NAME, location=NODE_LOCATION
-            )
+            node=self.node_info
         )
