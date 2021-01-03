@@ -9,6 +9,7 @@ python = "^3.8.2"
 Flask = "^1.1.2"
 gevent = "^20.12.1"
 requests = "^2.25.1"
+icmplib = "^2.0.1"
 core = {path = "../core"}
 
 [tool.poetry.dev-dependencies]

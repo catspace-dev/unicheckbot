@@ -6,7 +6,7 @@ import config
 
 monkey.patch_all()
 # Monkey patch SSL in requests to prevent RecursionError! DO NOT REMOVE OR MOVE!
-from checkers.http import HttpChecker
+from checkers import HttpChecker, ICMPChecker
 
 app = Flask(__name__)
 
@@ -21,6 +21,19 @@ def http_check():
         abort(400)
 
     checker = HttpChecker(target, port)
+
+    return jsonify(checker.check())
+
+
+@app.route('/icmp')
+@access_token_required
+def icmp_check():
+    target = request.args.get("target", None)
+
+    if not target:
+        abort(400)
+
+    checker = ICMPChecker(target)
 
     return jsonify(checker.check())
 

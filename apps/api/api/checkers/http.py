@@ -1,11 +1,10 @@
 from core.coretypes import (
-    Response, HttpCheckerResponse, APINodeInfo,
+    Response, HttpCheckerResponse,
     ResponseStatus, ErrorCodes, ErrorPayload,
 )
 from requests import Session
 from requests.exceptions import ConnectionError
 from .base import BaseChecker
-from api.config import NODE_NAME, NODE_LOCATION
 import time
 import re
 

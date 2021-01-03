@@ -11,20 +11,31 @@ class ResponseStatus(str, Enum):
     ERROR = "error"
 
 
-class HttpErrorCodes(IntEnum):
+class ErrorCodes(IntEnum):
     ConnectError = 1
+    ICMPHostNotAlive = 2
 
 
 @dataclass
 class ErrorPayload(Payload):
     message: str
-    code: HttpErrorCodes
+    code: ErrorCodes
 
 
 @dataclass
 class HttpCheckerResponse(Payload):
     status_code: int
     time: float
+
+
+@dataclass
+class ICMPCheckerResponse(Payload):
+    min_rtt: float
+    avg_rtt: float
+    max_rtt: float
+    packets_sent: int
+    packets_received: int
+    loss: float
 
 
 @dataclass
