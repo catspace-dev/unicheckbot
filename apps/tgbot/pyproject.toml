@@ -9,6 +9,7 @@ python = "^3.8"
 aiogram = "^2.11.2"
 core = {path = "../core"}
 httpx = "^0.16.1"
+python-whois = "^0.7.3"
 
 [tool.poetry.dev-dependencies]
 
