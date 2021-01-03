@@ -8,6 +8,7 @@ authors = ["kiriharu <kiriharu@yandex.ru>"]
 python = "^3.8"
 aiogram = "^2.11.2"
 core = {path = "../core"}
+httpx = "^0.16.1"
 
 [tool.poetry.dev-dependencies]
 
