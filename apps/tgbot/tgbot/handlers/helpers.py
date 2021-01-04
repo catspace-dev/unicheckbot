@@ -1,4 +1,4 @@
-from httpx import AsyncClient
+from httpx import AsyncClient, Timeout
 from typing import List
 from core.coretypes import APINode
 
@@ -15,7 +15,7 @@ def check_int(value) -> bool:
 async def send_api_requests(endpoint: str, data: dict, nodes: List[APINode]):
     for node in nodes:
         data.update(dict(token=node.token))
-        async with AsyncClient() as client:
+        async with AsyncClient(timeout=Timeout(timeout=100.0)) as client:
             result = await client.get(
                 f"{node.address}/{endpoint}", params=data
             )
