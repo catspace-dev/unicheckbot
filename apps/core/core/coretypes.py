@@ -14,6 +14,8 @@ class ResponseStatus(str, Enum):
 class ErrorCodes(IntEnum):
     ConnectError = 1
     ICMPHostNotAlive = 2
+    TCPPortClosed = 3
+    UDPPortClosed = 4
 
 
 @dataclass

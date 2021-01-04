@@ -2,7 +2,7 @@ from aiogram.types import Message
 from typing import Optional
 from tgbot.handlers.helpers import check_int
 from tgbot.nodes import nodes as all_nodes
-from httpx import AsyncClient, Response
+from httpx import Response
 from core.coretypes import ResponseStatus, HTTP_EMOJI
 from datetime import datetime
 from ..helpers import send_api_requests

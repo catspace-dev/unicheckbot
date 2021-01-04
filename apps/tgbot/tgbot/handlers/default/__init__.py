@@ -4,7 +4,6 @@ from .start import start_cmd
 from .web import web_cmd
 from .whois import whois_cmd
 from .icmp import icmp_cmd
-from .inline import inline_processor
 
 
 def setup(dp: Dispatcher):
@@ -12,4 +11,3 @@ def setup(dp: Dispatcher):
     dp.register_message_handler(web_cmd, commands=['web', 'http'])
     dp.register_message_handler(whois_cmd, commands=['whois'])
     dp.register_message_handler(icmp_cmd, commands=['icmp'])
-    dp.register_inline_handler(inline_processor)

@@ -12,12 +12,6 @@ icmp_help_message = """
  `/icmp <target>` 
 """
 
-no_icmp_text = """
-❗Не указана цель для пингования.
-
-Напишите /icmp чтобы посмотреть справку.
-"""
-
 
 async def prepare_icmp_check_result(res: Response):
     node = APINodeInfo(**res.json().get("node", None))
@@ -52,7 +46,7 @@ async def check_icmp(msg: Message, target: str):
 async def icmp_cmd(msg: Message):
     args = msg.text.split(" ")
     if len(args) == 1:
-        return await msg.answer(no_icmp_text)
+        return await msg.answer(icmp_help_message, parse_mode="Markdown")
     if len(args) >= 2:
         target = args[1]
         await check_icmp(msg, target)

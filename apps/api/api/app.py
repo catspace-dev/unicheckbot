@@ -1,11 +1,8 @@
 from flask import Flask, request, abort, jsonify
 from gevent.pywsgi import WSGIServer
-from gevent import monkey
 from helpers import access_token_required
 import config
 
-monkey.patch_all()
-# Monkey patch SSL in requests to prevent RecursionError! DO NOT REMOVE OR MOVE!
 from checkers import HttpChecker, ICMPChecker
 
 app = Flask(__name__)
