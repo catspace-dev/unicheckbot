@@ -14,8 +14,7 @@ class ResponseStatus(str, Enum):
 class ErrorCodes(IntEnum):
     ConnectError = 1
     ICMPHostNotAlive = 2
-    TCPPortClosed = 3
-    UDPPortClosed = 4
+    InvalidHostname = 3
 
 
 @dataclass
@@ -44,6 +43,11 @@ class ICMPCheckerResponse(Payload):
 class APINodeInfo:
     name: str
     location: str
+
+
+@dataclass
+class PortResponse(Payload):
+    open: bool
 
 
 @dataclass

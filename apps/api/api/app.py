@@ -3,7 +3,7 @@ from gevent.pywsgi import WSGIServer
 from helpers import access_token_required
 import config
 
-from checkers import HttpChecker, ICMPChecker
+from checkers import HttpChecker, ICMPChecker, TCPPortChecker
 
 app = Flask(__name__)
 
@@ -18,6 +18,20 @@ def http_check():
         abort(400)
 
     checker = HttpChecker(target, port)
+
+    return jsonify(checker.check())
+
+
+@app.route('/tcp_port')
+@access_token_required
+def tcp_port_check():
+    target = request.args.get("target", None)
+    port = int(request.args.get("port", 80))
+
+    if not target:
+        abort(400)
+
+    checker = TCPPortChecker(target, port)
 
     return jsonify(checker.check())
 
