@@ -10,6 +10,7 @@ Flask = "^1.1.2"
 gevent = "^20.12.1"
 requests = "^2.25.1"
 icmplib = "^2.0.1"
+mcstatus = "^4.1.0"
 core = {path = "../core"}
 
 [tool.poetry.dev-dependencies]

@@ -7,9 +7,9 @@ authors = ["kiriharu <kiriharu@yandex.ru>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 aiogram = "^2.11.2"
-core = {path = "../core"}
 httpx = "^0.16.1"
 python-whois = "^0.7.3"
+core = {path = "../core"}
 
 [tool.poetry.dev-dependencies]
 

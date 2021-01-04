@@ -3,7 +3,7 @@ from gevent.pywsgi import WSGIServer
 from helpers import access_token_required
 import config
 
-from checkers import HttpChecker, ICMPChecker, TCPPortChecker
+from checkers import HttpChecker, ICMPChecker, TCPPortChecker, MinecraftChecker
 
 app = Flask(__name__)
 
@@ -13,12 +13,9 @@ app = Flask(__name__)
 def http_check():
     target = request.args.get("target", None)
     port = int(request.args.get("port", 80))
-
     if not target:
         abort(400)
-
     checker = HttpChecker(target, port)
-
     return jsonify(checker.check())
 
 
@@ -27,12 +24,20 @@ def http_check():
 def tcp_port_check():
     target = request.args.get("target", None)
     port = int(request.args.get("port", None))
-
     if not target or not port:
         abort(400)
-
     checker = TCPPortChecker(target, port)
+    return jsonify(checker.check())
 
+
+@app.route('/minecraft')
+@access_token_required
+def minecraft_check():
+    target = request.args.get("target", None)
+    port = int(request.args.get("port", 25565))
+    if not target:
+        abort(400)
+    checker = MinecraftChecker(target, port)
     return jsonify(checker.check())
 
 
@@ -40,12 +45,9 @@ def tcp_port_check():
 @access_token_required
 def icmp_check():
     target = request.args.get("target", None)
-
     if not target:
         abort(400)
-
     checker = ICMPChecker(target)
-
     return jsonify(checker.check())
 
 

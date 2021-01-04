@@ -5,6 +5,7 @@ from .web import WebCheckerHandler
 from .whois import whois_cmd
 from .icmp import ICMPCheckerHandler
 from .tcp import TCPCheckerHandler
+from .minecraft import MinecraftCheckerHandler
 
 
 def setup(dp: Dispatcher):
@@ -13,3 +14,4 @@ def setup(dp: Dispatcher):
     dp.register_message_handler(whois_cmd, is_forwarded=False, commands=['whois'])
     dp.register_message_handler(ICMPCheckerHandler().handler, is_forwarded=False, commands=['icmp', 'ping'])
     dp.register_message_handler(TCPCheckerHandler().handler, is_forwarded=False, commands=['tcp'])
+    dp.register_message_handler(MinecraftCheckerHandler().handler, is_forwarded=False, commands=['minecraft'])

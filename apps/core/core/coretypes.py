@@ -46,6 +46,12 @@ class APINodeInfo:
 
 
 @dataclass
+class MinecraftResponse(Payload):
+    latency: float
+    max_players: int
+    online: int
+
+@dataclass
 class PortResponse(Payload):
     open: bool
 

@@ -6,7 +6,7 @@ from httpx import Response
 from aiogram.bot import Bot
 from datetime import datetime
 from core.coretypes import APINodeInfo
-from .helpers import send_api_requests
+from .helpers import send_api_requests, check_int
 
 header = "Отчет о проверке хоста:" \
          "\n\n— Хост: {target_fq}"\
@@ -58,3 +58,18 @@ class CheckerBaseHandler:
 
     async def prepare_message(self, res: Response) -> str:
         raise NotImplemented
+
+
+def process_args_for_host_port(text: str, default_port: int) -> list:
+    port = None
+    args = text.split(" ")
+    if len(args) < 2:
+        raise NotEnoughArgs()
+    if len(args) == 2:
+        port = default_port
+    if len(args) == 3:
+        port = args[2]
+        if not check_int(port):
+            raise InvalidPort()
+    host = args[1]
+    return [host, port]
