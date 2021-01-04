@@ -13,7 +13,7 @@ icmp_help_message = """
 
 class ICMPCheckerHandler(CheckerBaseHandler):
     help_message = icmp_help_message
-    api_endpoint = "/icmp"
+    api_endpoint = "icmp"
 
     def __init__(self):
         super(ICMPCheckerHandler, self).__init__()

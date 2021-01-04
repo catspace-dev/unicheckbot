@@ -17,7 +17,7 @@ invalid_port = """❗Неправильный порт. Напишите /web ч
 
 class WebCheckerHandler(CheckerBaseHandler):
     help_message = web_help_message
-    api_endpoint = "/http"
+    api_endpoint = "http"
 
     def __init__(self):
         super().__init__()

@@ -17,7 +17,7 @@ invalid_port = """❗Неправильный порт. Напишите /tcp ч
 
 class TCPCheckerHandler(CheckerBaseHandler):
     help_message = tcp_help_message
-    api_endpoint = "/tcp_port"
+    api_endpoint = "tcp_port"
 
     def __init__(self):
         super().__init__()
