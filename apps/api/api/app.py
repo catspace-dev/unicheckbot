@@ -26,9 +26,9 @@ def http_check():
 @access_token_required
 def tcp_port_check():
     target = request.args.get("target", None)
-    port = int(request.args.get("port", 80))
+    port = int(request.args.get("port", None))
 
-    if not target:
+    if not target or not port:
         abort(400)
 
     checker = TCPPortChecker(target, port)
