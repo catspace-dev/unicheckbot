@@ -1,10 +1,11 @@
 from aiogram.types import Message
 from typing import Optional
 from tgbot.handlers.helpers import check_int
-from tgbot.nodes import nodes
+from tgbot.nodes import nodes as all_nodes
 from httpx import AsyncClient, Response
 from core.coretypes import ResponseStatus, HTTP_EMOJI
 from datetime import datetime
+from ..helpers import send_api_requests
 
 web_help_message = """
 ❓ Производит проверку хоста по протоколу HTTP.
@@ -35,19 +36,6 @@ async def prepare_webcheck_message(response: Response) -> str:
     return message
 
 
-async def send_check_requests(host: str, port: int):
-    for node in nodes:
-        async with AsyncClient() as client:
-            result = await client.get(
-                f"{node.address}/http", params=dict(
-                    target=host,
-                    port=port,
-                    token=node.token
-                )
-            )
-        yield result
-
-
 async def check_web(message: Message, host: str, port: Optional[int]):
     if port is None:
         port = 80
@@ -57,7 +45,7 @@ async def check_web(message: Message, host: str, port: Optional[int]):
                                    )
     iter_keys = 1  # because I can't use enumerate
     # using generators for magic...
-    async for res in send_check_requests(host, port):
+    async for res in send_api_requests("http", dict(target=host, port=port), all_nodes):
         # set typing status...
         await message.bot.send_chat_action(message.chat.id, 'typing')
 

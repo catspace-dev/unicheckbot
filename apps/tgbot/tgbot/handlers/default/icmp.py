@@ -1,8 +1,9 @@
 from aiogram.types import Message
-from tgbot.nodes import nodes
+from tgbot.nodes import nodes as all_nodes
 from httpx import AsyncClient, Response
 from datetime import datetime
 from core.coretypes import ErrorCodes, ErrorPayload, ICMPCheckerResponse, ResponseStatus, APINodeInfo
+from ..helpers import send_api_requests
 
 icmp_help_message = """
 ❓ Производит проверку хоста по протоколу ICMP.
@@ -33,18 +34,6 @@ async def prepare_icmp_check_result(res: Response):
     return message
 
 
-async def send_icmp_check_request(target: str):
-    for node in nodes:
-        async with AsyncClient() as client:
-            result = await client.get(
-                f"{node.address}/icmp", params=dict(
-                    target=target,
-                    token=node.token
-                )
-            )
-        yield result
-
-
 async def check_icmp(msg: Message, target: str):
     rsp_msg = await msg.answer(f"Отчет о проверке хоста:"
                                f"\n\n— Хост: {target}"
@@ -52,7 +41,7 @@ async def check_icmp(msg: Message, target: str):
                                )
     iter_keys = 1  # because I can't use enumerate
     # using generators for magic...
-    async for res in send_icmp_check_request(target):
+    async for res in send_api_requests("icmp", dict(target=target), all_nodes):
         await msg.bot.send_chat_action(msg.chat.id, 'typing')
         node_formatted_response = await prepare_icmp_check_result(res)
         rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n\n{iter_keys}. {node_formatted_response}")
