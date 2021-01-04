@@ -1,23 +1,23 @@
 from aiogram.types import Message
-from tgbot.handlers.helpers import check_int
+from core.coretypes import ResponseStatus, ErrorPayload, PortResponse
 from httpx import Response
-from core.coretypes import ResponseStatus, HTTP_EMOJI, HttpCheckerResponse, ErrorPayload
-from ..base import CheckerBaseHandler, NotEnoughArgs, InvalidPort
 
-web_help_message = """
-❓ Производит проверку хоста по протоколу HTTP.
+from tgbot.handlers.base import CheckerBaseHandler, NotEnoughArgs, InvalidPort
+from tgbot.handlers.helpers import check_int
+
+tcp_help_message = """
+❓ Производит проверку TCP порта, открыт ли он или нет
 
 Использование:
- `/web <hostname> <port>` 
- `/web <hostname>` - автоматически выставит 80 порт
+ `/tcp <hostname> <port>` 
 """
 
-invalid_port = """❗Неправильный порт. Напишите /web чтобы увидеть справку к данному способу проверки."""
+invalid_port = """❗Неправильный порт. Напишите /tcp чтобы увидеть справку к данному способу проверки."""
 
 
-class WebCheckerHandler(CheckerBaseHandler):
-    help_message = web_help_message
-    api_endpoint = "/http"
+class TCPCheckerHandler(CheckerBaseHandler):
+    help_message = tcp_help_message
+    api_endpoint = "/tcp_port"
 
     def __init__(self):
         super().__init__()
@@ -38,23 +38,23 @@ class WebCheckerHandler(CheckerBaseHandler):
     async def process_args(self, text: str) -> list:
         port = None
         args = text.split(" ")
-        if len(args) < 2:
+        if len(args) < 3:
             raise NotEnoughArgs()
-        if len(args) == 3:
+        if len(args) >= 3:
             port = args[2]
             if not check_int(port):
                 raise InvalidPort()
-        if len(args) == 2:
-            port = 80
         host = args[1]
         return [host, port]
 
     async def prepare_message(self, res: Response):
         message, status = await self.message_std_vals(res)
         if status == ResponseStatus.OK:
-            payload = HttpCheckerResponse(**res.json().get("payload"))
-            message += f"{HTTP_EMOJI.get(payload.status_code // 100, '')} " \
-                       f"{payload.status_code}, ⏰ {payload.time * 1000:.2f}ms"
+            payload = PortResponse(**res.json().get("payload"))
+            if payload.open:
+                message += "✅ Порт ОТКРЫТ"
+            else:
+                message += "❌️ Порт ЗАКРЫТ"
         if status == ResponseStatus.ERROR:
             payload = ErrorPayload(**res.json().get("payload"))
             message += f"❌️ {payload.message}"

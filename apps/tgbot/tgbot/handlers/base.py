@@ -5,11 +5,11 @@ from tgbot.nodes import nodes as all_nodes
 from httpx import Response
 from aiogram.bot import Bot
 from datetime import datetime
-from core.coretypes import ErrorPayload, ICMPCheckerResponse, ResponseStatus, APINodeInfo
+from core.coretypes import APINodeInfo
 from .helpers import send_api_requests
 
 header = "Отчет о проверке хоста:" \
-         "\n\n— Хост: {target}"\
+         "\n\n— Хост: {target_fq}"\
          f"\n— Дата проверки: {datetime.now():%d.%m.%y в %H:%M} (MSK)"  # TODO: Get timezone
 
 
@@ -30,6 +30,7 @@ class CheckerBaseHandler:
         pass
 
     async def handler(self, message: Message):
+        """Always should call check at end"""
         raise NotImplemented
 
     async def check(self, chat_id: int, bot: Bot, data: dict):
@@ -39,7 +40,7 @@ class CheckerBaseHandler:
         async for res in send_api_requests(self.api_endpoint, data, all_nodes):
             await bot.send_chat_action(chat_id, 'typing')
             if res.status_code == 500:
-                rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n\n{iter_keys}. Backend offline!")
+                rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n\n{iter_keys}. ❌️ Результат операции не доступен.")
             else:
                 node_formatted_response = await self.prepare_message(res)
                 rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n\n{iter_keys}. {node_formatted_response}")

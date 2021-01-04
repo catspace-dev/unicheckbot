@@ -21,6 +21,7 @@ async def send_api_requests(endpoint: str, data: dict, nodes: List[APINode]):
                     f"{node.address}/{endpoint}", params=data
                 )
         except ConnectError:
+            # TODO: Report problems to admins
             # We yield 500 response when backend is offline
             result = Response(500)
         yield result
