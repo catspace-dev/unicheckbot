@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "host_report"
+name = "hostinfobot"
 version = "0.1.0"
 description = ""
 authors = ["kiriharu <kiriharu@yandex.ru>"]
