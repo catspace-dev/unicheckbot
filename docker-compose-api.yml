@@ -1,0 +1,15 @@
+version: "3.3"
+services:
+  api:
+    build:
+      context: ./apps
+      dockerfile: Dockerfile-api
+    environment:
+      - APP_PORT=8080
+      - WORKERS=2
+      - ASYNC_CORES=2000
+      - NODE_NAME="Default node"
+      - NODE_LOCATION="Undefined location"
+      - ACCESS_TOKEN="CHANGE_TOKEN"
+    ports:
+      - "0.0.0.0:8080:8080"
