@@ -1,0 +1,8 @@
+version: "3.3"
+services:
+  tgbot:
+    build:
+      context: ./apps
+      dockerfile: Dockerfile-tgbot
+    env_file:
+      - tgbot.env
