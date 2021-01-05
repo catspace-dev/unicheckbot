@@ -27,8 +27,9 @@ class HttpChecker(BaseChecker):
 
         start_time = time.time()
         try:
-            request = self.session.get(
-                url
+            request = self.session.head(
+                url,
+                allow_redirects=True,
             )
         # TODO: requests.exceptions.InvalidURL failed to parse exception
         except ConnectionError:
