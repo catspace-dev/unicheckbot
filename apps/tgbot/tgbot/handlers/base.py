@@ -6,7 +6,7 @@ from httpx import Response
 from aiogram.bot import Bot
 from datetime import datetime
 from core.coretypes import APINodeInfo
-from .helpers import send_api_requests, check_int
+from .helpers import send_api_requests, check_int, validate_local
 
 header = "Отчет о проверке хоста:" \
          "\n\n— Хост: {target_fq}"\
@@ -21,9 +21,16 @@ class InvalidPort(Exception):
     pass
 
 
+class LocalhostForbidden(Exception):
+    pass
+
+
 class CheckerBaseHandler:
     help_message = "Set help message in class!"
     header_message = header
+    localhost_forbidden_message = "❗ Локальные адреса запрещены"
+    invalid_port_message = "Invalid port!"
+
     api_endpoint = "Set api endpoint in class!"
 
     def __init__(self):
@@ -31,7 +38,24 @@ class CheckerBaseHandler:
 
     async def handler(self, message: Message):
         """Always should call check at end"""
-        raise NotImplemented
+
+    async def target_port_handler(self, message: Message):
+        """This hanler can be used if you need target port args"""
+        try:
+            args = await self.process_args(message.text)
+        except NotEnoughArgs:
+            return await message.answer(self.help_message, parse_mode="Markdown")
+        except InvalidPort:
+            return await message.answer(self.invalid_port_message, parse_mode="Markdown")
+        try:
+            await self.validate_target(args[0])
+        except LocalhostForbidden:
+            return await message.answer(self.localhost_forbidden_message, parse_mode="Markdown")
+        await self.check(
+            message.chat.id,
+            message.bot,
+            dict(target=args[0], port=args[1], target_fq=f"{args[0]}:{args[1]}")
+        )
 
     async def check(self, chat_id: int, bot: Bot, data: dict):
         rsp_msg = await bot.send_message(chat_id, header.format(**data))
@@ -46,6 +70,10 @@ class CheckerBaseHandler:
                 rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n\n{iter_keys}. {node_formatted_response}")
             iter_keys = iter_keys + 1
         await rsp_msg.edit_text(rsp_msg.text + f"\n\nПроверка завершена❗")
+
+    async def validate_target(self, target: str):
+        if validate_local(target):
+            raise LocalhostForbidden()
 
     async def process_args(self, text: str) -> list:
         raise NotImplemented
