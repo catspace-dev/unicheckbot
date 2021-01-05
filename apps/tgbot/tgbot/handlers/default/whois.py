@@ -19,6 +19,7 @@ no_domain_text = """
 localhost_exception = "❗Локальные адреса запрещены!"
 
 
+# TODO: Very shitty code. I should rewrite this.
 def create_whois_message(domain: str) -> str:
     domain_info = whois.whois(domain)
     domain_name = domain_info.get("domain_name")
@@ -44,13 +45,22 @@ def create_whois_message(domain: str) -> str:
         message += f"\n📅 Дата окончания:: {expiration_date}\n"
 
     if address := domain_info.get("address"):
-        message += f"\n📖 Адрес: {address}"
+        if isinstance(address, list):
+            message += "\n📖 Адрес: \n" + str.join("\n", [f" * <code>{address_obj}</code>" for address_obj in address])
+        else:
+            message += f"\n📖 Адрес: {address}"
     if city := domain_info.get("city"):
-        message += f"\n🏘 Город: {city}"
+        if isinstance(city, list):
+            message += "\n🏘 Город: \n" + str.join("\n", [f" * <code>{city_obj}</code>" for city_obj in city])
+        else:
+            message += f"\n🏘 Город: {city}"
     if country := domain_info.get("country"):
         message += f"\n🏳️ Страна: {country}"
     if name := domain_info.get("name"):
-        message += f"\n💬 Имя: {name}"
+        if isinstance(name, list):
+            message += "\n🏘 💬 Имя: \n" + str.join("\n", [f" * <code>{name_obj}</code>" for name_obj in name])
+        else:
+            message += f"\n💬 Имя: {name}"
     if org := domain_info.get("org"):
         message += f"\n💼 Организация: {org}"
     if zipcode := domain_info.get("zipcode"):
@@ -64,6 +74,7 @@ def create_whois_message(domain: str) -> str:
     if dnssec := domain_info.get("dnssec"):
         message += f"\n🔐 DNSSec: {dnssec}"
     return message
+
 
 @rate_limit
 async def whois_cmd(msg: Message):
