@@ -4,6 +4,7 @@ from httpx import Response
 
 from tgbot.handlers.base import CheckerBaseHandler, process_args_for_host_port
 from tgbot.handlers.metrics import push_status_metric
+from tgbot.middlewares.throttling import rate_limit
 
 minecraft_help_message = """
 ❓ Получает статистику о Minecraft сервере
@@ -24,6 +25,7 @@ class MinecraftCheckerHandler(CheckerBaseHandler):
     def __init__(self):
         super().__init__()
 
+    @rate_limit
     async def handler(self, message: Message):
         await self.target_port_handler(message)
 

@@ -3,6 +3,7 @@ from httpx import Response
 from core.coretypes import ResponseStatus, HTTP_EMOJI, HttpCheckerResponse, ErrorPayload
 from ..base import CheckerBaseHandler, process_args_for_host_port
 from ..metrics import push_status_metric
+from tgbot.middlewares.throttling import rate_limit
 
 web_help_message = """
 ❓ Производит проверку хоста по протоколу HTTP.
@@ -22,6 +23,7 @@ class WebCheckerHandler(CheckerBaseHandler):
     def __init__(self):
         super().__init__()
 
+    @rate_limit
     async def handler(self, message: Message):
         await self.target_port_handler(message)
 

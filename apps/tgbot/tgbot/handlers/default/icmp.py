@@ -3,6 +3,7 @@ from httpx import Response
 from core.coretypes import ErrorPayload, ICMPCheckerResponse, ResponseStatus
 from ..base import CheckerBaseHandler, NotEnoughArgs, LocalhostForbidden
 from ..metrics import push_status_metric
+from tgbot.middlewares.throttling import rate_limit
 
 icmp_help_message = """
 ❓ Производит проверку хоста по протоколу ICMP.
@@ -19,6 +20,7 @@ class ICMPCheckerHandler(CheckerBaseHandler):
     def __init__(self):
         super(ICMPCheckerHandler, self).__init__()
 
+    @rate_limit
     async def handler(self, message: Message):
         try:
             args = await self.process_args(message.text)

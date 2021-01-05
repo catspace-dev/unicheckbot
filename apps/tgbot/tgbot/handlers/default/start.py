@@ -1,5 +1,6 @@
 from aiogram.types import Message
 from tgbot.nodes import nodes
+from tgbot.middlewares.throttling import rate_limit
 
 start_message = f"""
 Привет! Добро пожаловать в @hostinfobot!\n
@@ -20,6 +21,6 @@ start_message = f"""
 
 """
 
-
+@rate_limit
 async def start_cmd(msg: Message):
     await msg.answer(start_message, parse_mode='markdown')

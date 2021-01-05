@@ -1,6 +1,6 @@
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from tgbot.middlewares import WriteCommandMetric, LoggingMiddleware
+from tgbot.middlewares import WriteCommandMetric, LoggingMiddleware, ThrottlingMiddleware
 import config
 import handlers
 
@@ -10,11 +10,12 @@ dp = Dispatcher(telegram_bot, storage=storage)
 
 
 def on_startup():
-	handlers.default.setup(dp)
-	dp.middleware.setup(WriteCommandMetric())
-	dp.middleware.setup(LoggingMiddleware())
+    handlers.default.setup(dp)
+    dp.middleware.setup(WriteCommandMetric())
+    dp.middleware.setup(LoggingMiddleware())
+    dp.middleware.setup(ThrottlingMiddleware())
 
 
 if __name__ == '__main__':
-	on_startup()
-	executor.start_polling(dp, skip_updates=True)
+    on_startup()
+    executor.start_polling(dp, skip_updates=True)

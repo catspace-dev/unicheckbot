@@ -1,7 +1,8 @@
-from aiogram.types import Message
 import whois
+from aiogram.types import Message
 
 from tgbot.handlers.helpers import validate_local
+from tgbot.middlewares.throttling import rate_limit
 
 whois_help_message = """
 ❓ Вернёт информацию о домене.
@@ -64,7 +65,7 @@ def create_whois_message(domain: str) -> str:
         message += f"\n🔐 DNSSec: {dnssec}"
     return message
 
-
+@rate_limit
 async def whois_cmd(msg: Message):
     args = msg.text.split(" ")
     if len(args) == 1:
