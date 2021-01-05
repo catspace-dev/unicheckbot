@@ -126,3 +126,6 @@ dmypy.json
 
 # poetry lock
 poetry.lock
+
+# env files
+.env

@@ -25,4 +25,4 @@
 * Запустите `docker-compose -f docker-compose-api.yml up -d`
 * В боте по пути `apps/tgbot/tgbot/nodes.py` добавьте ноду как указано в примере и перезапустите его.
 #### Установка бота
-* Запустите `docker-compose -f docker-compose-bot.yml up -d`
+* Запустите `docker-compose -f docker-compose-tgbot.yml up -d`
