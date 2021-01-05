@@ -1,7 +1,7 @@
 from aiogram.types import Message
 from httpx import Response
 from core.coretypes import ErrorPayload, ICMPCheckerResponse, ResponseStatus
-from ..base import CheckerBaseHandler, NotEnoughArgs
+from ..base import CheckerBaseHandler, NotEnoughArgs, LocalhostForbidden
 
 icmp_help_message = """
 ❓ Производит проверку хоста по протоколу ICMP.
@@ -23,6 +23,8 @@ class ICMPCheckerHandler(CheckerBaseHandler):
             args = await self.process_args(message.text)
         except NotEnoughArgs:
             return await message.answer(icmp_help_message)
+        except LocalhostForbidden:
+            return await message.answer(self.localhost_forbidden_message, parse_mode="Markdown")
         await self.check(message.chat.id, message.bot, dict(target=args[0], target_fq=args[0]))
 
     async def process_args(self, text: str) -> list:
@@ -31,6 +33,7 @@ class ICMPCheckerHandler(CheckerBaseHandler):
             raise NotEnoughArgs()
         if len(args) >= 2:
             target = args[1]
+            await self.validate_target(target)
             return [target]
 
     async def prepare_message(self, res: Response):

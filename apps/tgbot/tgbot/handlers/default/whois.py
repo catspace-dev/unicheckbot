@@ -1,6 +1,8 @@
 from aiogram.types import Message
 import whois
 
+from tgbot.handlers.helpers import validate_local
+
 whois_help_message = """
 ❓ Вернёт информацию о домене.
 
@@ -12,6 +14,8 @@ no_domain_text = """
 
 Напишите /whois чтобы посмотреть справку.
 """
+
+localhost_exception = "❗Локальные адреса запрещены!"
 
 
 def create_whois_message(domain: str) -> str:
@@ -67,5 +71,7 @@ async def whois_cmd(msg: Message):
         return await msg.answer(no_domain_text)
     if len(args) >= 2:
         host = args[1]
+        if validate_local(args[0]):
+            return await msg.answer(localhost_exception, parse_mode="Markdown")
         await msg.bot.send_chat_action(msg.chat.id, 'typing')
         await msg.answer(create_whois_message(host), parse_mode='html')

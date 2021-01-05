@@ -22,17 +22,7 @@ class WebCheckerHandler(CheckerBaseHandler):
         super().__init__()
 
     async def handler(self, message: Message):
-        try:
-            args = await self.process_args(message.text)
-        except NotEnoughArgs:
-            return await message.answer(self.help_message, parse_mode="Markdown")
-        except InvalidPort:
-            return await message.answer(invalid_port, parse_mode="Markdown")
-        await self.check(
-            message.chat.id,
-            message.bot,
-            dict(target=args[0], port=args[1], target_fq=f"{args[0]}:{args[1]}")
-        )
+        await self.target_port_handler(message)
 
     async def process_args(self, text: str) -> list:
         return process_args_for_host_port(text, 80)
