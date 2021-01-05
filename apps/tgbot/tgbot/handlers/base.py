@@ -7,7 +7,8 @@ from aiogram.bot import Bot
 from datetime import datetime
 from core.coretypes import APINodeInfo
 from .helpers import send_api_requests, check_int, validate_local
-from .metrics import push_metric
+from loguru import logger
+from uuid import uuid4
 
 header = "Отчет о проверке хоста:" \
          "\n\n— Хост: {target_fq}"\
@@ -45,12 +46,15 @@ class CheckerBaseHandler:
         try:
             args = await self.process_args(message.text)
         except NotEnoughArgs:
+            logger.info(f"User {message.from_user.id} got NotEnoughArgs error")
             return await message.answer(self.help_message, parse_mode="Markdown")
         except InvalidPort:
+            logger.info(f"User {message.from_user.id} got InvalidPort error")
             return await message.answer(self.invalid_port_message, parse_mode="Markdown")
         try:
             await self.validate_target(args[0])
         except LocalhostForbidden:
+            logger.info(f"User {message.from_user.id} got LocalhostForbidden error")
             return await message.answer(self.localhost_forbidden_message, parse_mode="Markdown")
         await self.check(
             message.chat.id,
@@ -59,6 +63,9 @@ class CheckerBaseHandler:
         )
 
     async def check(self, chat_id: int, bot: Bot, data: dict):
+        # TODO: start check and end check metrics with ident, chat_id and api_endpoint
+        ident = uuid4().hex
+        logger.info(f"User {chat_id} started check {ident}")
         rsp_msg = await bot.send_message(chat_id, header.format(**data))
         iter_keys = 1  # because I can't use enumerate
         # using generators for magic...
@@ -70,6 +77,7 @@ class CheckerBaseHandler:
                 node_formatted_response = await self.prepare_message(res)
                 rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n\n{iter_keys}. {node_formatted_response}")
             iter_keys = iter_keys + 1
+        logger.info(f"User {chat_id} ended check {ident}")
         await rsp_msg.edit_text(rsp_msg.text + f"\n\nПроверка завершена❗")
 
     async def validate_target(self, target: str):

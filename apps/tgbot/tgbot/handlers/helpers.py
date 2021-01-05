@@ -3,7 +3,7 @@ from typing import List
 from core.coretypes import APINode
 from ipaddress import ip_address
 from contextlib import suppress
-
+from loguru import logger
 from tgbot.handlers.metrics import push_api_request_status
 
 
@@ -45,7 +45,8 @@ async def send_api_requests(endpoint: str, data: dict, nodes: List[APINode]):
                 result = await client.get(
                     f"{node.address}/{endpoint}", params=data
                 )
-        except ConnectError:
+        except ConnectError as e:
+            logger.error(f"Node {node.address} got ConnectionError. Full exception: {e}")
             # TODO: Report problems to admins
             # We yield 500 response when backend is offline
             result = Response(500)
