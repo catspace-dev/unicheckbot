@@ -2,7 +2,8 @@ from aiogram.types import Message
 from core.coretypes import ResponseStatus, ErrorPayload, MinecraftResponse
 from httpx import Response
 
-from tgbot.handlers.base import CheckerBaseHandler, NotEnoughArgs, InvalidPort, process_args_for_host_port
+from tgbot.handlers.base import CheckerBaseHandler, process_args_for_host_port
+from tgbot.handlers.metrics import push_status_metric
 
 minecraft_help_message = """
 ❓ Получает статистику о Minecraft сервере
@@ -37,4 +38,5 @@ class MinecraftCheckerHandler(CheckerBaseHandler):
         if status == ResponseStatus.ERROR:
             payload = ErrorPayload(**res.json().get("payload"))
             message += f"❌️ {payload.message}"
+        await push_status_metric(status, self.api_endpoint)
         return message

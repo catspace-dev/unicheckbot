@@ -7,6 +7,7 @@ from aiogram.bot import Bot
 from datetime import datetime
 from core.coretypes import APINodeInfo
 from .helpers import send_api_requests, check_int, validate_local
+from .metrics import push_metric
 
 header = "Отчет о проверке хоста:" \
          "\n\n— Хост: {target_fq}"\

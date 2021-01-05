@@ -1,6 +1,6 @@
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-
+from tgbot.middlewares import WriteCommandMetric
 import config
 import handlers
 
@@ -11,6 +11,7 @@ dp = Dispatcher(telegram_bot, storage=storage)
 
 def on_startup():
 	handlers.default.setup(dp)
+	dp.middleware.setup(WriteCommandMetric())
 
 
 if __name__ == '__main__':

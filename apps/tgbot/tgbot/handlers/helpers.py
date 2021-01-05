@@ -4,6 +4,8 @@ from core.coretypes import APINode
 from ipaddress import ip_address
 from contextlib import suppress
 
+from tgbot.handlers.metrics import push_api_request_status
+
 
 def check_int(value) -> bool:
     try:
@@ -47,4 +49,8 @@ async def send_api_requests(endpoint: str, data: dict, nodes: List[APINode]):
             # TODO: Report problems to admins
             # We yield 500 response when backend is offline
             result = Response(500)
+        await push_api_request_status(
+            result.status_code,
+            endpoint
+        )
         yield result

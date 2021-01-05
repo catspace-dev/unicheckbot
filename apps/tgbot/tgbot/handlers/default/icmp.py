@@ -2,6 +2,7 @@ from aiogram.types import Message
 from httpx import Response
 from core.coretypes import ErrorPayload, ICMPCheckerResponse, ResponseStatus
 from ..base import CheckerBaseHandler, NotEnoughArgs, LocalhostForbidden
+from ..metrics import push_status_metric
 
 icmp_help_message = """
 ❓ Производит проверку хоста по протоколу ICMP.
@@ -45,4 +46,5 @@ class ICMPCheckerHandler(CheckerBaseHandler):
         if status == ResponseStatus.ERROR:
             payload = ErrorPayload(**res.json().get("payload"))
             message += f"❌️ {payload.message}"
+        await push_status_metric(status, self.api_endpoint)
         return message

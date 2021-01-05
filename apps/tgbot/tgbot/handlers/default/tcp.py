@@ -4,6 +4,7 @@ from httpx import Response
 
 from tgbot.handlers.base import CheckerBaseHandler, NotEnoughArgs, InvalidPort
 from tgbot.handlers.helpers import check_int
+from tgbot.handlers.metrics import push_status_metric
 
 tcp_help_message = """
 ❓ Производит проверку TCP порта, открыт ли он или нет
@@ -48,4 +49,5 @@ class TCPCheckerHandler(CheckerBaseHandler):
         if status == ResponseStatus.ERROR:
             payload = ErrorPayload(**res.json().get("payload"))
             message += f"❌️ {payload.message}"
+        await push_status_metric(status, self.api_endpoint)
         return message

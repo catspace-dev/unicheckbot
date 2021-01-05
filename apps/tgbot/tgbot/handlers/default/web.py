@@ -1,7 +1,8 @@
 from aiogram.types import Message
 from httpx import Response
 from core.coretypes import ResponseStatus, HTTP_EMOJI, HttpCheckerResponse, ErrorPayload
-from ..base import CheckerBaseHandler, NotEnoughArgs, InvalidPort, process_args_for_host_port
+from ..base import CheckerBaseHandler, process_args_for_host_port
+from ..metrics import push_status_metric
 
 web_help_message = """
 ❓ Производит проверку хоста по протоколу HTTP.
@@ -36,4 +37,5 @@ class WebCheckerHandler(CheckerBaseHandler):
         if status == ResponseStatus.ERROR:
             payload = ErrorPayload(**res.json().get("payload"))
             message += f"❌️ {payload.message}"
+        await push_status_metric(status, self.api_endpoint)
         return message
