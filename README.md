@@ -1,5 +1,5 @@
 <h1 align="center">
-	HostInfoBot
+	United Checker Bot
 </h1>
 <p align="center">
 <img src="https://img.shields.io/badge/aiogram-blue"> <img src="https://img.shields.io/badge/gevent-green"> <img src="https://img.shields.io/badge/flask-yellow"> <img src="https://img.shields.io/badge/mcstatus-purple"> <img src="https://img.shields.io/badge/icmplib-pink"> <img src="https://img.shields.io/badge/requests-black">
@@ -16,11 +16,11 @@
 * В зависимости от команды бот получает информацию с указанных нод
 * Архитектура не отменяет того, что в боте есть команды, которые выполняются на хосте где установлен бот.
 
-Все команды, которые есть сейчас, можно посмотреть [в самом боте](https://t.me/hostinfobot "в самом боте"), для этого напишите в нём /start 
+Все команды, которые есть сейчас, можно посмотреть [в самом боте](https://t.me/unicheckbot), для этого напишите в нём /start 
 
 ### Установка
 * Установите git, docker и docker-compose
-* Склонируйте репозиторий: `git clone https://github.com/catspace-dev/hostinfobot`
+* Склонируйте репозиторий: `git clone https://github.com/catspace-dev/unicheckbot`
 #### Установка API сервера
 * Запустите `docker-compose -f docker-compose-api.yml up -d`
 * В боте по пути `apps/tgbot/tgbot/nodes.py` добавьте ноду как указано в примере и перезапустите его.
