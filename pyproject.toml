@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "hostinfobot"
+name = "unicheckbot"
 version = "0.1.0"
 description = ""
 authors = ["kiriharu <kiriharu@yandex.ru>"]
