@@ -25,7 +25,7 @@ class ICMPCheckerHandler(CheckerBaseHandler):
         try:
             args = await self.process_args(message.text)
         except NotEnoughArgs:
-            return await message.answer(icmp_help_message)
+            return await message.answer(icmp_help_message, parse_mode="Markdown")
         except LocalhostForbidden:
             return await message.answer(self.localhost_forbidden_message, parse_mode="Markdown")
         await self.check(message.chat.id, message.bot, dict(target=args[0], target_fq=args[0]))
