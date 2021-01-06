@@ -21,6 +21,7 @@ start_message = f"""
 
 """
 
+
 @rate_limit
 async def start_cmd(msg: Message):
     await msg.answer(start_message, parse_mode='markdown')

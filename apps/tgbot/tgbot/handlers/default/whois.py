@@ -1,5 +1,6 @@
-import whois
+from whois import whois, parser
 from aiogram.types import Message
+from aiogram.utils.markdown import quote_html
 
 from tgbot.handlers.helpers import validate_local
 from tgbot.middlewares.throttling import rate_limit
@@ -21,7 +22,10 @@ localhost_exception = "❗Локальные адреса запрещены!"
 
 # TODO: Very shitty code. I should rewrite this.
 def create_whois_message(domain: str) -> str:
-    domain_info = whois.whois(domain)
+    try:
+        domain_info = whois(domain)
+    except parser.PywhoisError as e:
+        return f"❗ Домен {domain} свободен или не был найден."
     domain_name = domain_info.get("domain_name")
     if domain_name is None:
         return no_domain_text
