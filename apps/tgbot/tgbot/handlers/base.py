@@ -6,9 +6,10 @@ from httpx import Response
 from aiogram.bot import Bot
 from datetime import datetime
 from core.coretypes import APINodeInfo
-from .helpers import send_api_requests, check_int, validate_local
+from .helpers import send_api_requests, check_int, validate_local, timing
 from loguru import logger
 from uuid import uuid4
+from time import time
 
 header = "Отчет о проверке хоста:" \
          "\n\n— Хост: {target_fq}"\
@@ -64,6 +65,7 @@ class CheckerBaseHandler:
 
     async def check(self, chat_id: int, bot: Bot, data: dict):
         # TODO: start check and end check metrics with ident, chat_id and api_endpoint
+        ts = time()
         ident = uuid4().hex
         logger.info(f"User {chat_id} started check {ident}")
         rsp_msg = await bot.send_message(chat_id, header.format(**data))
@@ -79,6 +81,8 @@ class CheckerBaseHandler:
             iter_keys = iter_keys + 1
         logger.info(f"User {chat_id} ended check {ident}")
         await rsp_msg.edit_text(rsp_msg.text + f"\n\nПроверка завершена❗")
+        te = time()
+        logger.info(f"func {__name__} took {te - ts} sec")
 
     async def validate_target(self, target: str):
         if validate_local(target):
