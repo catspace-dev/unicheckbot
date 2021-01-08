@@ -60,7 +60,7 @@ class ThrottlingMiddleware(BaseMiddleware):
 
         # Prevent flooding
         if throttled.exceeded_count <= 2:
-            await message.reply('❗️Слишком мого запросов. '
+            await message.reply('❗️Слишком много запросов. '
                                 'Подождите еще несколько секунд перед отправкой следующего сообщения.'
                                 '\nВ целях предотвращения флуда, бот перестанет отвечать на ваши сообщения '
                                 'на некоторое время.')
