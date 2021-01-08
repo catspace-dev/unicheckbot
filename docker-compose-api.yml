@@ -7,4 +7,4 @@ services:
     env_file:
       - api.env
     ports:
-      - "0.0.0.0:8080:8080"
+      - ${APP_PORT}:${APP_PORT}

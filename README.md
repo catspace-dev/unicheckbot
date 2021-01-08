@@ -22,7 +22,9 @@
 * Установите git, docker и docker-compose
 * Склонируйте репозиторий: `git clone https://github.com/catspace-dev/unicheckbot`
 #### Установка API сервера
-* Запустите `docker-compose -f docker-compose-api.yml up -d`
-* В боте по пути `apps/tgbot/tgbot/nodes.py` добавьте ноду как указано в примере и перезапустите его.
+* Настройте параметры в `api.env`
+* Запустите `docker-compose -f docker-compose-api.yml --env-file api.env up -d`
+* В боте по пути `apps/tgbot/tgbot/nodes.py` добавьте ноду как указано в примере и перезапустите бота.
 #### Установка бота
-* Запустите `docker-compose -f docker-compose-tgbot.yml up -d`
+* Настройте параметры в `tgbot.env`
+* Запустите `docker-compose -f docker-compose-tgbot.yml --env-file tgbot.env up -d`
