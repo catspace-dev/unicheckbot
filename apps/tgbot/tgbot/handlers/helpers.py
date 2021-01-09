@@ -63,11 +63,11 @@ async def send_api_request(client: AsyncClient, endpoint: str, data: dict, node:
         )
     except Exception as e:
         # Remove token from log data
-        del data["token"]
+        data.pop('token', None)
         logger.error(f"Node {node.address} got Error. Data: {data}. Endpoint: {endpoint}. Full exception: {e}")
         result = Response(500)
-        await send_message_to_admins(f"Node {node.address} got error {e}. \n"
-                                     f"Data: {data}, Endpoint: {endpoint}\n"
+        await send_message_to_admins(f"Node {node.address} got error: `{e}`. \n"
+                                     f"Data: `{data}`, Endpoint: `{endpoint}`\n"
                                      f"Full exception: ```{format_exc()}```")
         await push_api_request_status(
             result.status_code,
