@@ -28,7 +28,19 @@ class LocalhostForbidden(Exception):
     pass
 
 
-class CheckerBaseHandler:
+class SimpleCommandHandler:
+
+    async def handler(self, message: Message):
+        pass
+
+    async def process_args(self, text: str) -> list:
+        raise NotImplemented
+
+    async def prepare_message(self, res: Response) -> str:
+        raise NotImplemented
+
+
+class CheckerBaseHandler(SimpleCommandHandler):
     help_message = "Set help message in class!"
     header_message = header
     localhost_forbidden_message = "❗ Локальные адреса запрещены"
@@ -38,9 +50,6 @@ class CheckerBaseHandler:
 
     def __init__(self):
         pass
-
-    async def handler(self, message: Message):
-        """Always should call check at end"""
 
     async def target_port_handler(self, message: Message):
         """This hanler can be used if you need target port args"""
@@ -88,17 +97,11 @@ class CheckerBaseHandler:
         if validate_local(target):
             raise LocalhostForbidden()
 
-    async def process_args(self, text: str) -> list:
-        raise NotImplemented
-
     async def message_std_vals(self, res: Response) -> Tuple[str, Any]:
         node = APINodeInfo(**res.json().get("node", None))
         message = f"{node.location}:\n"
         status = res.json().get("status", None)
         return message, status
-
-    async def prepare_message(self, res: Response) -> str:
-        raise NotImplemented
 
 
 def process_args_for_host_port(text: str, default_port: int) -> list:
