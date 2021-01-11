@@ -27,9 +27,9 @@ class IPCalcCommandHandler(SimpleCommandHandler):
             args = await self.process_args(message.text)
             network = ipaddress.ip_network(args[1], False)
         except NotEnoughArgs:
-            await message.answer(self.help_message)
+            await message.answer(self.help_message, parse_mode='Markdown')
         except ValueError:
-            await message.answer(self.help_message)
+            await message.answer(self.help_message, parse_mode='Markdown')
         else:
             msg = await self.prepare_message(network)
             await message.answer(msg)
