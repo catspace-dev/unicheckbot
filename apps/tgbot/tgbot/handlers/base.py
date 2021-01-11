@@ -29,6 +29,7 @@ class LocalhostForbidden(Exception):
 
 
 class SimpleCommandHandler:
+    help_message = "Set help message in class!"
 
     async def handler(self, message: Message):
         pass
@@ -36,21 +37,23 @@ class SimpleCommandHandler:
     async def process_args(self, text: str) -> list:
         raise NotImplemented
 
-    async def prepare_message(self, res: Response) -> str:
+    async def validate_target(self, target: str):
+        raise NotImplemented
+
+    async def prepare_message(self, *args) -> str:
         raise NotImplemented
 
 
 class CheckerBaseHandler(SimpleCommandHandler):
-    help_message = "Set help message in class!"
-    header_message = header
     localhost_forbidden_message = "❗ Локальные адреса запрещены"
     invalid_port_message = "Invalid port!"
-
+    header_message = header
     api_endpoint = "Set api endpoint in class!"
 
     def __init__(self):
         pass
 
+    # TODO: create class CheckerTargetPortHandler
     async def target_port_handler(self, message: Message):
         """This hanler can be used if you need target port args"""
         try:
