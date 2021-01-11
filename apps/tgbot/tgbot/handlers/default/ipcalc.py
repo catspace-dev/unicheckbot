@@ -3,6 +3,7 @@ from typing import Union
 import ipaddress
 
 from tgbot.handlers.base import SimpleCommandHandler, NotEnoughArgs
+from tgbot.middlewares.throttling import rate_limit
 
 ipcalc_help_message = """
 ❓ Калькулятор IP подсетей.
@@ -20,6 +21,7 @@ class IPCalcCommandHandler(SimpleCommandHandler):
     def __init__(self):
         super().__init__()
 
+    @rate_limit
     async def handler(self, message: Message):
         try:
             args = await self.process_args(message.text)

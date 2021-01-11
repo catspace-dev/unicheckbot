@@ -96,6 +96,7 @@ class CheckerBaseHandler(SimpleCommandHandler):
         te = time()
         logger.info(f"func {__name__} took {te - ts} sec")
 
+    # TODO: Validation classes
     async def validate_target(self, target: str):
         if validate_local(target):
             raise LocalhostForbidden()
