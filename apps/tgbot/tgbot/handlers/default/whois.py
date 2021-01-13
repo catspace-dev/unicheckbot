@@ -4,7 +4,9 @@ from whois import whois, parser
 from aiogram.types import Message
 from dataclasses import dataclass
 from whois_vu.api import WhoisSource
+from whois_vu.errors import IncorrectZone, QueryNotMatchRegexp
 
+from tgbot.handlers.whois_zones import ZONES
 from tgbot.handlers.base import SimpleCommandHandler
 from tgbot.handlers.errors import NotEnoughArgs, LocalhostForbidden
 from tgbot.middlewares.throttling import rate_limit
@@ -20,6 +22,12 @@ no_domain_text = """
 
 Напишите /whois чтобы посмотреть справку.
 """
+
+incorrect_domain = "❗ Домен {domain} не поддерживается в текущей реализации /whois или его попросту не " \
+                   "существует.\n\n" \
+                   "📌 Если вы считаете что это какая-то ошибка, " \
+                   "то вы можете рассказать " \
+                   "нам о ней удобным для вас способом. Контакты указаны в /start."
 
 
 @dataclass
@@ -49,17 +57,27 @@ DOMAIN_ATTR_CLASSES = [
 def whois_request(domain: str) -> parser.WhoisEntry:
     domain_info = whois(domain)
     if domain_info.get("domain_name") is None:
+        splitted = domain.split(".")
         ws = WhoisSource().get(domain)
-        domain_info = parser.WhoisEntry.load(domain, ws.whois)
+        if zone_class := ZONES.get(splitted[-1], None):
+            domain_info = zone_class(domain, ws.whois)
+        else:
+            domain_info = parser.WhoisEntry.load(domain, ws.whois)
     return domain_info
 
 
 def create_whois_message(domain: str) -> str:
     try:
         domain_info = whois_request(domain)
-    except parser.PywhoisError as e:
+    except parser.PywhoisError:
         return f"❗ Домен {domain} свободен или не был найден."
+    except IncorrectZone:
+        return incorrect_domain.format(domain=domain)
+    except QueryNotMatchRegexp:
+        return incorrect_domain.format(domain=domain)
     domain_name = domain_info.get("domain_name")
+    if not domain_name:
+        return incorrect_domain.format(domain=domain)
     if isinstance(domain_name, list):
         domain_name = domain_name[0]
     message = f"\n📝 Информация о домене {domain_name.lower()}:"
