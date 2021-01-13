@@ -2,7 +2,8 @@ from whois import whois, parser
 from aiogram.types import Message
 from aiogram.utils.markdown import quote_html
 
-from tgbot.handlers.helpers import validate_local
+from tgbot.handlers.base import SimpleCommandHandler
+from tgbot.handlers.errors import NotEnoughArgs, LocalhostForbidden
 from tgbot.middlewares.throttling import rate_limit
 
 whois_help_message = """
@@ -17,10 +18,7 @@ no_domain_text = """
 Напишите /whois чтобы посмотреть справку.
 """
 
-localhost_exception = "❗Локальные адреса запрещены!"
 
-
-# TODO: Very shitty code. I should rewrite this.
 def create_whois_message(domain: str) -> str:
     try:
         domain_info = whois(domain)
@@ -80,14 +78,32 @@ def create_whois_message(domain: str) -> str:
     return message
 
 
-@rate_limit
-async def whois_cmd(msg: Message):
-    args = msg.text.split()
-    if len(args) == 1:
-        return await msg.answer(no_domain_text)
-    if len(args) >= 2:
-        host = args[1]
-        if validate_local(args[0]):
-            return await msg.answer(localhost_exception, parse_mode="Markdown")
-        await msg.bot.send_chat_action(msg.chat.id, 'typing')
-        await msg.answer(create_whois_message(host), parse_mode='html')
+class WhoisCommandHandler(SimpleCommandHandler):
+
+    help_message = whois_help_message
+
+    def __init__(self):
+        super().__init__()
+
+    @rate_limit
+    async def handler(self, message: Message):
+        try:
+            args = await self.process_args(message.text)
+        except NotEnoughArgs:
+            await message.answer(no_domain_text, parse_mode='Markdown')
+        except LocalhostForbidden:
+            await message.answer(self.localhost_forbidden_message, parse_mode='Markdown')
+        else:
+            await message.answer(create_whois_message(args[0]), parse_mode='html')
+
+    async def process_args(self, text: str) -> list:
+        args = text.split()
+        if len(args) == 1:
+            raise NotEnoughArgs
+        if len(args) >= 2:
+            host = args[1]
+            await self.validate_target(host)
+            return [host]  # only domain name
+
+    async def prepare_message(self) -> str:
+        pass

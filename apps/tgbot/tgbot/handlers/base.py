@@ -21,6 +21,7 @@ header = "Отчет о проверке хоста:" \
 
 class SimpleCommandHandler:
     help_message = "Set help message in class!"
+    localhost_forbidden_message = "❗ Локальные адреса запрещены"
     validators: List[BaseValidator] = [LocalhostValidator()]
 
     @rate_limit
@@ -39,7 +40,6 @@ class SimpleCommandHandler:
 
 
 class CheckerBaseHandler(SimpleCommandHandler):
-    localhost_forbidden_message = "❗ Локальные адреса запрещены"
     invalid_port_message = "Invalid port!"
     header_message = header
     api_endpoint = "Set api endpoint in class!"
