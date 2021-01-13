@@ -1,5 +1,8 @@
+from typing import Optional
+
 from whois import whois, parser
 from aiogram.types import Message
+from dataclasses import dataclass
 from aiogram.utils.markdown import quote_html
 
 from tgbot.handlers.base import SimpleCommandHandler
@@ -19,6 +22,30 @@ no_domain_text = """
 """
 
 
+@dataclass
+class DomainAttrClass:
+    icon: str
+    name: str
+    attr: str
+
+
+# DOMAIN_ATTR_CLASSES order have matter!
+DOMAIN_ATTR_CLASSES = [
+    DomainAttrClass("👤", "Регистратор", "registrar"),
+    DomainAttrClass("📅", "Дата создания", "creation_date"),
+    DomainAttrClass("📅", "Дата окончания", "expiration_date"),
+    DomainAttrClass("📖", "Адрес", "address"),
+    DomainAttrClass("🏘", "Город", "city"),
+    DomainAttrClass("🏘", "Страна", "country"),
+    DomainAttrClass("💬", "Имя", "name"),
+    DomainAttrClass("💼", "Организация", "org"),
+    DomainAttrClass("💬", "Zipcode", "zipcode"),
+    DomainAttrClass("✉", "Почта", "emails"),
+    DomainAttrClass("📌", "NS", "name_servers"),
+    DomainAttrClass("🔐", "DNSSec", "dnssec"),
+]
+
+
 def create_whois_message(domain: str) -> str:
     try:
         domain_info = whois(domain)
@@ -27,59 +54,36 @@ def create_whois_message(domain: str) -> str:
     domain_name = domain_info.get("domain_name")
     if domain_name is None:
         return no_domain_text
-
     if isinstance(domain_name, list):
         domain_name = domain_name[0]
 
-    message = f"\n📝 Информация о домене {domain_name.lower()}:" \
-              f"\n\n👤 Регистратор: {domain_info.get('registrar')}" \
+    message = f"\n📝 Информация о домене {domain_name.lower()}:"
 
-    if creation_date := domain_info.get('creation_date'):
-        if isinstance(creation_date, list):
-            creation_date = creation_date[0]
+    for i, domain_attr in enumerate(DOMAIN_ATTR_CLASSES):
+        # for pretty printing, DOMAIN_ATTR_CLASSES order have matter!
+        if i in [2, 10]:
+            message += "\n"
+        resp = format_domain_item(
+            domain_attr.icon, domain_attr.name, domain_info.get(domain_attr.attr)
+        )
+        if resp:
+            message += resp
 
-        message += f"\n📅 Дата создания: {creation_date}"
+    return message
 
-    if expiration_date := domain_info.get('expiration_date'):
-        if isinstance(expiration_date, list):
-            expiration_date = expiration_date[0]
 
-        message += f"\n📅 Дата окончания:: {expiration_date}\n"
-
-    if address := domain_info.get("address"):
-        if isinstance(address, list):
-            message += "\n📖 Адрес: \n" + str.join("\n", [f" * <code>{address_obj}</code>" for address_obj in address])
-        else:
-            message += f"\n📖 Адрес: {address}"
-    if city := domain_info.get("city"):
-        if isinstance(city, list):
-            message += "\n🏘 Город: \n" + str.join("\n", [f" * <code>{city_obj}</code>" for city_obj in city])
-        else:
-            message += f"\n🏘 Город: {city}"
-    if country := domain_info.get("country"):
-        message += f"\n🏳️ Страна: {country}"
-    if name := domain_info.get("name"):
-        if isinstance(name, list):
-            message += "\n🏘 💬 Имя: \n" + str.join("\n", [f" * <code>{name_obj}</code>" for name_obj in name])
-        else:
-            message += f"\n💬 Имя: {name}"
-    if org := domain_info.get("org"):
-        message += f"\n💼 Организация: {org}"
-    if zipcode := domain_info.get("zipcode"):
-        message += f"\n🖥 Zipcode: {zipcode}"
-    if emails := domain_info.get("emails"):
-        message += "\n✉️ Почта: \n" + str.join("\n", [f" * <code>{email}</code>" for email in emails])
-
-    if name_servers := domain_info.get('name_servers'):
-        message += "\n\n📌 NS: \n" + str.join("\n", [f" * <code>{ns}</code>" for ns in
-                                                     list(set(map(str.lower, name_servers)))])
-    if dnssec := domain_info.get("dnssec"):
-        message += f"\n🔐 DNSSec: {dnssec}"
+def format_domain_item(icon, item_name, items) -> Optional[str]:
+    if not items:
+        return
+    if isinstance(items, list):
+        message = f"\n{icon} {item_name}:\n"
+        message += str.join("\n", [f" * <code>{ns}</code>" for ns in list(set(map(str.lower, items)))])
+    else:
+        message = f"\n{icon} {item_name}: {items}"
     return message
 
 
 class WhoisCommandHandler(SimpleCommandHandler):
-
     help_message = whois_help_message
 
     def __init__(self):
