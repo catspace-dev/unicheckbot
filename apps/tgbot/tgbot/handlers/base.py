@@ -110,7 +110,7 @@ class CheckerBaseHandler(SimpleCommandHandler):
 
 def process_args_for_host_port(text: str, default_port: int) -> list:
     port = None
-    args = text.split(" ")
+    args = text.split()
     if len(args) < 2:
         raise NotEnoughArgs()
     if len(args) == 2:

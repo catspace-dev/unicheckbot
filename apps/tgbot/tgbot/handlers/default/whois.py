@@ -82,7 +82,7 @@ def create_whois_message(domain: str) -> str:
 
 @rate_limit
 async def whois_cmd(msg: Message):
-    args = msg.text.split(" ")
+    args = msg.text.split()
     if len(args) == 1:
         return await msg.answer(no_domain_text)
     if len(args) >= 2:

@@ -31,7 +31,7 @@ class ICMPCheckerHandler(CheckerBaseHandler):
         await self.check(message.chat.id, message.bot, dict(target=args[0], target_fq=args[0]))
 
     async def process_args(self, text: str) -> list:
-        args = text.split(" ")
+        args = text.split()
         if len(args) == 1:
             raise NotEnoughArgs()
         if len(args) >= 2:
