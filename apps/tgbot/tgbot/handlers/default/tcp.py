@@ -30,7 +30,7 @@ class TCPCheckerHandler(CheckerBaseHandler):
 
     async def process_args(self, text: str) -> list:
         port = None
-        args = text.split(" ")
+        args = text.split()
         if len(args) < 3:
             raise NotEnoughArgs()
         if len(args) >= 3:

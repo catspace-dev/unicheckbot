@@ -17,7 +17,7 @@ class WriteCommandMetric(BaseMiddleware):
                 value=1,
             ),
             tags=dict(
-                command=message.text.split(" ")[0],
+                command=message.text.split()[0],
                 type="command"
             )
         )

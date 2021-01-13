@@ -35,7 +35,7 @@ class IPCalcCommandHandler(SimpleCommandHandler):
             await message.answer(msg)
 
     async def process_args(self, text: str) -> list:
-        args = text.split(" ")
+        args = text.split()
         if len(args) == 1:
             raise NotEnoughArgs
         return args
