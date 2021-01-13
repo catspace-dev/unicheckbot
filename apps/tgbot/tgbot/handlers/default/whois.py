@@ -3,7 +3,7 @@ from typing import Optional
 from whois import whois, parser
 from aiogram.types import Message
 from dataclasses import dataclass
-from aiogram.utils.markdown import quote_html
+from whois_vu.api import WhoisSource
 
 from tgbot.handlers.base import SimpleCommandHandler
 from tgbot.handlers.errors import NotEnoughArgs, LocalhostForbidden
@@ -29,7 +29,7 @@ class DomainAttrClass:
     attr: str
 
 
-# DOMAIN_ATTR_CLASSES order have matter!
+# DOMAIN_ATTR_CLASSES order matters!
 DOMAIN_ATTR_CLASSES = [
     DomainAttrClass("👤", "Регистратор", "registrar"),
     DomainAttrClass("📅", "Дата создания", "creation_date"),
@@ -46,21 +46,26 @@ DOMAIN_ATTR_CLASSES = [
 ]
 
 
+def whois_request(domain: str) -> parser.WhoisEntry:
+    domain_info = whois(domain)
+    if domain_info.get("domain_name") is None:
+        ws = WhoisSource().get(domain)
+        domain_info = parser.WhoisEntry.load(domain, ws.whois)
+    return domain_info
+
+
 def create_whois_message(domain: str) -> str:
     try:
-        domain_info = whois(domain)
+        domain_info = whois_request(domain)
     except parser.PywhoisError as e:
         return f"❗ Домен {domain} свободен или не был найден."
     domain_name = domain_info.get("domain_name")
-    if domain_name is None:
-        return no_domain_text
     if isinstance(domain_name, list):
         domain_name = domain_name[0]
-
     message = f"\n📝 Информация о домене {domain_name.lower()}:"
 
     for i, domain_attr in enumerate(DOMAIN_ATTR_CLASSES):
-        # for pretty printing, DOMAIN_ATTR_CLASSES order have matter!
+        # for pretty printing, DOMAIN_ATTR_CLASSES order matters!
         if i in [2, 10]:
             message += "\n"
         resp = format_domain_item(
@@ -76,6 +81,7 @@ def format_domain_item(icon, item_name, items) -> Optional[str]:
     if not items:
         return
     if isinstance(items, list):
+        items = map(str, items)  # fix datetime bug
         message = f"\n{icon} {item_name}:\n"
         message += str.join("\n", [f" * <code>{ns}</code>" for ns in list(set(map(str.lower, items)))])
     else:

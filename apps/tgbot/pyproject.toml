@@ -12,6 +12,7 @@ python-whois = "^0.7.3"
 core = {path = "../core"}
 aioinflux = "^0.9.0"
 loguru = "^0.5.3"
+whois-vu = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 
