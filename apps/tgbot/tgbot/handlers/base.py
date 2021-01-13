@@ -1,12 +1,15 @@
 from aiogram.types import Message
-from typing import Tuple, Any
+from typing import Tuple, Any, List
 
 from tgbot.nodes import nodes as all_nodes
 from httpx import Response
 from aiogram.bot import Bot
 from datetime import datetime
 from core.coretypes import APINodeInfo
-from .helpers import send_api_requests, check_int, validate_local, timing
+from .helpers import send_api_requests, check_int
+from .errors import NotEnoughArgs, InvalidPort, LocalhostForbidden
+from .validators import BaseValidator, LocalhostValidator
+from tgbot.middlewares.throttling import rate_limit
 from loguru import logger
 from uuid import uuid4
 from time import time
@@ -16,21 +19,11 @@ header = "Отчет о проверке хоста:" \
          f"\n— Дата проверки: {datetime.now():%d.%m.%y в %H:%M} (MSK)"  # TODO: Get timezone
 
 
-class NotEnoughArgs(Exception):
-    pass
-
-
-class InvalidPort(Exception):
-    pass
-
-
-class LocalhostForbidden(Exception):
-    pass
-
-
 class SimpleCommandHandler:
     help_message = "Set help message in class!"
+    validators: List[BaseValidator] = [LocalhostValidator()]
 
+    @rate_limit
     async def handler(self, message: Message):
         pass
 
@@ -38,7 +31,8 @@ class SimpleCommandHandler:
         raise NotImplemented
 
     async def validate_target(self, target: str):
-        raise NotImplemented
+        for validator in self.validators:
+            validator.validate(target)
 
     async def prepare_message(self, *args) -> str:
         raise NotImplemented
@@ -52,28 +46,6 @@ class CheckerBaseHandler(SimpleCommandHandler):
 
     def __init__(self):
         pass
-
-    # TODO: create class CheckerTargetPortHandler
-    async def target_port_handler(self, message: Message):
-        """This hanler can be used if you need target port args"""
-        try:
-            args = await self.process_args(message.text)
-        except NotEnoughArgs:
-            logger.info(f"User {message.from_user.id} got NotEnoughArgs error")
-            return await message.answer(self.help_message, parse_mode="Markdown")
-        except InvalidPort:
-            logger.info(f"User {message.from_user.id} got InvalidPort error")
-            return await message.answer(self.invalid_port_message, parse_mode="Markdown")
-        try:
-            await self.validate_target(args[0])
-        except LocalhostForbidden:
-            logger.info(f"User {message.from_user.id} got LocalhostForbidden error")
-            return await message.answer(self.localhost_forbidden_message, parse_mode="Markdown")
-        await self.check(
-            message.chat.id,
-            message.bot,
-            dict(target=args[0], port=args[1], target_fq=f"{args[0]}:{args[1]}")
-        )
 
     async def check(self, chat_id: int, bot: Bot, data: dict):
         # TODO: start check and end check metrics with ident, chat_id and api_endpoint
@@ -96,16 +68,38 @@ class CheckerBaseHandler(SimpleCommandHandler):
         te = time()
         logger.info(f"func {__name__} took {te - ts} sec")
 
-    # TODO: Validation classes
-    async def validate_target(self, target: str):
-        if validate_local(target):
-            raise LocalhostForbidden()
-
     async def message_std_vals(self, res: Response) -> Tuple[str, Any]:
         node = APINodeInfo(**res.json().get("node", None))
         message = f"{node.location}:\n"
         status = res.json().get("status", None)
         return message, status
+
+
+class CheckerTargetPortHandler(CheckerBaseHandler):
+
+    @rate_limit
+    async def handler(self, message: Message):
+        """This hanler can be used if you need target port args"""
+        try:
+            args = await self.process_args(message.text)
+        except NotEnoughArgs:
+            logger.info(f"User {message.from_user.id} got NotEnoughArgs error")
+            return await message.answer(self.help_message, parse_mode="Markdown")
+        except InvalidPort:
+            logger.info(f"User {message.from_user.id} got InvalidPort error")
+            return await message.answer(self.invalid_port_message, parse_mode="Markdown")
+        try:
+            await self.validate_target(args[0])
+        except ValueError:  # For ip check
+            pass
+        except LocalhostForbidden:
+            logger.info(f"User {message.from_user.id} got LocalhostForbidden error")
+            return await message.answer(self.localhost_forbidden_message, parse_mode="Markdown")
+        await self.check(
+            message.chat.id,
+            message.bot,
+            dict(target=args[0], port=args[1], target_fq=f"{args[0]}:{args[1]}")
+        )
 
 
 def process_args_for_host_port(text: str, default_port: int) -> list:
