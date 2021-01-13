@@ -1,10 +1,8 @@
-from aiogram.types import Message
 from core.coretypes import ResponseStatus, ErrorPayload, MinecraftResponse
 from httpx import Response
 
-from tgbot.handlers.base import CheckerBaseHandler, process_args_for_host_port
+from tgbot.handlers.base import CheckerTargetPortHandler, process_args_for_host_port
 from tgbot.handlers.metrics import push_status_metric
-from tgbot.middlewares.throttling import rate_limit
 
 minecraft_help_message = """
 ❓ Получает статистику о Minecraft сервере
@@ -18,16 +16,12 @@ minecraft_help_message = """
 invalid_port = """❗Неправильный порт. Напишите /minecraft чтобы увидеть справку к данному способу проверки."""
 
 
-class MinecraftCheckerHandler(CheckerBaseHandler):
+class MinecraftCheckerHandler(CheckerTargetPortHandler):
     help_message = minecraft_help_message
     api_endpoint = "minecraft"
 
     def __init__(self):
         super().__init__()
-
-    @rate_limit
-    async def handler(self, message: Message):
-        await self.target_port_handler(message)
 
     async def process_args(self, text: str) -> list:
         return process_args_for_host_port(text, 25565)

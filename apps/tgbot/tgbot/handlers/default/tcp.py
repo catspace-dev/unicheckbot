@@ -2,7 +2,7 @@ from aiogram.types import Message
 from core.coretypes import ResponseStatus, ErrorPayload, PortResponse
 from httpx import Response
 
-from tgbot.handlers.base import CheckerBaseHandler, NotEnoughArgs, InvalidPort
+from tgbot.handlers.base import CheckerTargetPortHandler, NotEnoughArgs, InvalidPort
 from tgbot.handlers.helpers import check_int
 from tgbot.handlers.metrics import push_status_metric
 from tgbot.middlewares.throttling import rate_limit
@@ -17,7 +17,7 @@ tcp_help_message = """
 invalid_port = """❗Неправильный порт. Напишите /tcp чтобы увидеть справку к данному способу проверки."""
 
 
-class TCPCheckerHandler(CheckerBaseHandler):
+class TCPCheckerHandler(CheckerTargetPortHandler):
     help_message = tcp_help_message
     api_endpoint = "tcp_port"
 
@@ -26,7 +26,7 @@ class TCPCheckerHandler(CheckerBaseHandler):
 
     @rate_limit
     async def handler(self, message: Message):
-        await self.target_port_handler(message)
+        await super(TCPCheckerHandler, self).handler(message)
 
     async def process_args(self, text: str) -> list:
         port = None
