@@ -8,21 +8,7 @@ from aiogram.bot import Bot
 from tgbot.handlers.metrics import push_api_request_status
 from tgbot.config import NOTIFICATION_BOT_TOKEN, NOTIFICATION_USERS
 from traceback import format_exc
-from functools import wraps
-from time import time
 import asyncio
-
-
-def timing(f):
-    @wraps(f)
-    def wrap(*args, **kw):
-        ts = time()
-        result = f(*args, **kw)
-        te = time()
-        logger.info(f"func {f.__name__} took {te - ts} sec")
-        return result
-
-    return wrap
 
 
 def check_int(value) -> bool:
@@ -32,27 +18,6 @@ def check_int(value) -> bool:
         return False
     else:
         return True
-
-
-def validate_local(target: str) -> bool:
-    """
-    Validates ip or FQDN is localhost
-
-    :return True if localhost find
-    """
-    if target == "localhost":
-        return True
-    with suppress(ValueError):
-        ip_addr = ip_address(target)
-        if any(
-                [ip_addr.is_loopback,
-                 ip_addr.is_private,
-                 ip_addr.is_multicast,
-                 ip_addr.is_link_local,
-                 ip_addr.is_unspecified]
-        ):
-            return True
-    return False
 
 
 async def send_api_request(client: AsyncClient, endpoint: str, data: dict, node: APINode):
