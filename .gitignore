@@ -129,3 +129,6 @@ poetry.lock
 
 # env files
 .env
+
+# nodes file
+nodes.py
