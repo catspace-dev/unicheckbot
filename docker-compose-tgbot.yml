@@ -1,8 +1,17 @@
 version: "3.3"
 services:
-  tgbot:
+   tgbot:
     build:
       context: ./apps
       dockerfile: Dockerfile-tgbot
     env_file:
       - tgbot.env
+    depends_on:
+      - db
+
+
+   db:
+     image: mariadb
+     restart: always
+     env_file:
+       - tgbot.env
