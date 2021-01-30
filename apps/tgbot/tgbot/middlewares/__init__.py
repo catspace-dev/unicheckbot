@@ -1,3 +1,4 @@
 from tgbot.middlewares.write_command_metric import WriteCommandMetric
 from tgbot.middlewares.logging import LoggingMiddleware
 from tgbot.middlewares.throttling import ThrottlingMiddleware
+from tgbot.middlewares.userdata import UserMiddleware

@@ -13,3 +13,10 @@ INFLUX_DB = os.getenv("INFLUX_DB", None)
 # Notifications
 NOTIFICATION_BOT_TOKEN = os.getenv("NOTIFICATION_BOT_TOKEN")
 NOTIFICATION_USERS = os.getenv("NOTIFICATION_USERS", "").split(",")
+
+# Mysql params
+MYSQL_HOST = os.getenv("MYSQL_HOST", None)  # if none, use sqlite db
+MYSQL_USER = os.getenv("MYSQL_USER")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+MYSQL_PORT = os.getenv("MYSQL_PORT", 3306)
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "unicheckbot")

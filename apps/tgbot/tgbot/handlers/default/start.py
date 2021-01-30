@@ -1,5 +1,7 @@
 from aiogram.types import Message
+from tgbot.models.user import User
 from tgbot.middlewares.throttling import rate_limit
+from tgbot.middlewares.userdata import userdata_required
 
 start_message = """
 
@@ -30,6 +32,7 @@ start_message = """
 """
 
 
+@userdata_required
 @rate_limit
-async def start_cmd(msg: Message):
+async def start_cmd(msg: Message, user: User):
     await msg.answer(start_message.replace("%name%", msg.from_user.full_name), parse_mode='markdown', disable_web_page_preview=True)
