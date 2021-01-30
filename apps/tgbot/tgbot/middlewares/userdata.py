@@ -10,6 +10,8 @@ def userdata_required(func):
     setattr(func, 'userdata_required', True)
     return func
 
+# I think, now it useless
+
 
 class UserMiddleware(BaseMiddleware):
 

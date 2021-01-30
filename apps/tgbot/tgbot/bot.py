@@ -2,7 +2,9 @@ from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from tgbot.middlewares import UserMiddleware, WriteCommandMetric, LoggingMiddleware, ThrottlingMiddleware
 from tortoise import Tortoise
+from tortoise.exceptions import DBConnectionError
 from loguru import logger
+from asyncio import sleep
 import config
 import handlers
 
@@ -17,12 +19,17 @@ async def database_init():
                  f"{config.MYSQL_HOST}:{config.MYSQL_PORT}/{config.MYSQL_DATABASE}"
     else:
         db_url = "sqlite://db.sqlite3"
-    await Tortoise.init(
-        db_url=db_url,
-        modules={
-            'models': ['tgbot.models']
-        }
-    )
+    try:
+        await Tortoise.init(
+            db_url=db_url,
+            modules={
+                'models': ['tgbot.models']
+            }
+        )
+    except DBConnectionError:
+        logger.error("Connection to database failed.")
+        await sleep(10)
+        await database_init()
     await Tortoise.generate_schemas()
     logger.info("Tortoise inited!")
 
