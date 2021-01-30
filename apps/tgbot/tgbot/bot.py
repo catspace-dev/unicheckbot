@@ -20,7 +20,7 @@ async def database_init():
     await Tortoise.init(
         db_url=db_url,
         modules={
-            'default': ['tgbot.models']
+            'models': ['tgbot.models']
         }
     )
     await Tortoise.generate_schemas()
@@ -30,9 +30,9 @@ async def database_init():
 async def on_startup(disp: Dispatcher):
     await database_init()
     handlers.default.setup(disp)
+    disp.middleware.setup(ThrottlingMiddleware())
     disp.middleware.setup(WriteCommandMetric())
     disp.middleware.setup(LoggingMiddleware())
-    disp.middleware.setup(ThrottlingMiddleware())
     disp.middleware.setup(UserMiddleware())
 
 if __name__ == '__main__':
