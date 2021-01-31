@@ -8,8 +8,9 @@ minecraft_help_message = """
 ❓ Получает статистику о Minecraft сервере
 
 Использование:
- `/minecraft <hostname> <port>` 
- `/minecraft <hostname>` - автоматически выставит порт 25565 
+ `/minecraft <hostname> <port>`
+ `/minecraft <hostname>:<port>`
+ `/minecraft <hostname>` - автоматически выставит порт 25565
 """
 
 

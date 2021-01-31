@@ -7,7 +7,8 @@ web_help_message = """
 ❓ Производит проверку хоста по протоколу HTTP.
 
 Использование:
- `/web <hostname> <port>` 
+ `/web <hostname> <port>`
+ `/web <hostname>:<port>`
  `/web <hostname>` - автоматически выставит 80 порт
 """
 
