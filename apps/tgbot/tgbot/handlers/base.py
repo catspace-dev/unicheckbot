@@ -6,7 +6,7 @@ from httpx import Response
 from aiogram.bot import Bot
 from datetime import datetime
 from core.coretypes import APINodeInfo
-from .helpers import send_api_requests, check_int
+from .helpers import send_api_requests
 from .errors import NotEnoughArgs, InvalidPort, LocalhostForbidden
 from .validators import BaseValidator, LocalhostValidator
 from tgbot.middlewares.throttling import rate_limit
