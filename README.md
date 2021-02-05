@@ -1,5 +1,5 @@
 <h1 align="center">
-	United Checker Bot
+	Universal Checker Bot
 </h1>
 <p align="center">
 <img src="https://img.shields.io/badge/aiogram-blue"> <img src="https://img.shields.io/badge/gevent-green"> <img src="https://img.shields.io/badge/flask-yellow"> <img src="https://img.shields.io/badge/mcstatus-purple"> <img src="https://img.shields.io/badge/icmplib-pink"> <img src="https://img.shields.io/badge/requests-black">
