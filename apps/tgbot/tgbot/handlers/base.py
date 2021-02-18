@@ -6,7 +6,7 @@ from httpx import Response
 from aiogram.bot import Bot
 from datetime import datetime
 from core.coretypes import APINodeInfo
-from .helpers import send_api_requests, check_int
+from .helpers import send_api_requests
 from .errors import NotEnoughArgs, InvalidPort, LocalhostForbidden
 from .validators import BaseValidator, LocalhostValidator
 from tgbot.middlewares.throttling import rate_limit
@@ -103,15 +103,13 @@ class CheckerTargetPortHandler(CheckerBaseHandler):
 
 
 def process_args_for_host_port(text: str, default_port: int) -> list:
-    port = None
-    args = text.split()
-    if len(args) < 2:
+    port = default_port
+    args = text.split(' ', 1)
+    if len(args) != 2:
         raise NotEnoughArgs()
-    if len(args) == 2:
-        port = default_port
-    if len(args) == 3:
-        port = args[2]
-        if not check_int(port):
-            raise InvalidPort()
     host = args[1]
+    if ":" in host:
+        host, port = host.rsplit(":", 1)
+    elif " " in host:
+        host, port = host.rsplit(" ", 1)
     return [host, port]

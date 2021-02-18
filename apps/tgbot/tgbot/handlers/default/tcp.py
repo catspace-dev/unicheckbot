@@ -11,7 +11,8 @@ tcp_help_message = """
 ❓ Производит проверку TCP порта, открыт ли он или нет
 
 Использование:
- `/tcp <hostname> <port>` 
+ `/tcp <hostname> <port>`
+ `/tcp <hostname>:<port>`
 """
 
 invalid_port = """❗Неправильный порт. Напишите /tcp чтобы увидеть справку к данному способу проверки."""
@@ -29,15 +30,18 @@ class TCPCheckerHandler(CheckerTargetPortHandler):
         await super(TCPCheckerHandler, self).handler(message)
 
     async def process_args(self, text: str) -> list:
-        port = None
-        args = text.split()
-        if len(args) < 3:
+        args = text.split(' ', 1)
+        if len(args) != 2:
             raise NotEnoughArgs()
-        if len(args) >= 3:
-            port = args[2]
-            if not check_int(port):
-                raise InvalidPort()
         host = args[1]
+        if ":" in host:
+            host, port = host.rsplit(":", 1)
+        elif " " in host:
+            host, port = host.split(maxsplit=1)
+        else:
+            raise NotEnoughArgs()
+        if not check_int(port):
+            raise InvalidPort()
         return [host, port]
 
     async def prepare_message(self, res: Response):
