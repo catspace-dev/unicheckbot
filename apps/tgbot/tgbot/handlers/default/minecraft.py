@@ -24,7 +24,7 @@ class MinecraftCheckerHandler(CheckerTargetPortHandler):
     def __init__(self):
         super().__init__()
 
-    async def process_args(self, text: str) -> list:
+    def process_args(self, text: str) -> list:
         return process_args_for_host_port(text, 25565)
 
     async def prepare_message(self, res: Response):

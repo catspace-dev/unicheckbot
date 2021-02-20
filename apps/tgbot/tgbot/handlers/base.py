@@ -28,10 +28,10 @@ class SimpleCommandHandler:
     async def handler(self, message: Message):
         pass
 
-    async def process_args(self, text: str) -> list:
+    def process_args(self, text: str) -> list:
         raise NotImplemented
 
-    async def validate_target(self, target: str):
+    def validate_target(self, target: str):
         for validator in self.validators:
             validator.validate(target)
 
@@ -81,7 +81,7 @@ class CheckerTargetPortHandler(CheckerBaseHandler):
     async def handler(self, message: Message):
         """This hanler can be used if you need target port args"""
         try:
-            args = await self.process_args(message.text)
+            args = self.process_args(message.text)
         except NotEnoughArgs:
             logger.info(f"User {message.from_user.id} got NotEnoughArgs error")
             return await message.answer(self.help_message, parse_mode="Markdown")
@@ -89,7 +89,7 @@ class CheckerTargetPortHandler(CheckerBaseHandler):
             logger.info(f"User {message.from_user.id} got InvalidPort error")
             return await message.answer(self.invalid_port_message, parse_mode="Markdown")
         try:
-            await self.validate_target(args[0])
+            self.validate_target(args[0])
         except ValueError:  # For ip check
             pass
         except LocalhostForbidden:

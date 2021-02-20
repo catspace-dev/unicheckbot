@@ -29,7 +29,7 @@ class TCPCheckerHandler(CheckerTargetPortHandler):
     async def handler(self, message: Message):
         await super(TCPCheckerHandler, self).handler(message)
 
-    async def process_args(self, text: str) -> list:
+    def process_args(self, text: str) -> list:
         args = text.split(' ', 1)
         if len(args) != 2:
             raise NotEnoughArgs()
