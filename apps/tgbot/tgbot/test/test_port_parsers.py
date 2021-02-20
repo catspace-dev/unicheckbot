@@ -19,7 +19,7 @@ class TestArgsProc(TestCase):
             with self.subTest(command=cmd):
                 self.assertRaises(
                     exc,
-                    lambda: process_args_for_host_port(cmd, 443)
+                    process_args_for_host_port, cmd, 443
                 )
     
     def test_host_port(self):
@@ -56,7 +56,7 @@ class TestTCPCheckerHandler(TestCase):
             with self.subTest(cmd=cmd):
                 self.assertRaises(
                     exc,
-                    lambda: self.method(cmd)
+                    self.method, cmd
                 )
 
     def test_host_port(self):
