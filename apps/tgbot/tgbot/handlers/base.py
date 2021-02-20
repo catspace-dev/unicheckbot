@@ -102,14 +102,32 @@ class CheckerTargetPortHandler(CheckerBaseHandler):
         )
 
 
-def process_args_for_host_port(text: str, default_port: int) -> list:
+def parse_host_port(text: str, default_port: int) -> Tuple[str, int]:
+    """Parse host:port
+    """
+    text = text.strip()
     port = default_port
+    host = text
+    if ":" in text:
+        host, port = text.rsplit(":", 1)
+    elif " " in text:
+        host, port = text.rsplit(" ", 1)
+
+    try:
+        port = int(port)
+        # !Important: Don't check range if port == default_port!
+        assert port == default_port or port in range(1, 65_536)
+    except (ValueError, AssertionError):
+        raise InvalidPort(port)
+    
+    return (host, port)
+
+
+def process_args_for_host_port(text: str, default_port: int) -> Tuple[str, int]:
+    """Parse target from command
+    """
     args = text.split(' ', 1)
     if len(args) != 2:
         raise NotEnoughArgs()
-    host = args[1]
-    if ":" in host:
-        host, port = host.rsplit(":", 1)
-    elif " " in host:
-        host, port = host.rsplit(" ", 1)
-    return [host, port]
+    target = args[1]
+    return parse_host_port(target, default_port)

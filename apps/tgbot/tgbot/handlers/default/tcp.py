@@ -1,9 +1,9 @@
+from typing import Tuple
 from aiogram.types import Message
 from core.coretypes import ResponseStatus, ErrorPayload, PortResponse
 from httpx import Response
 
-from tgbot.handlers.base import CheckerTargetPortHandler, NotEnoughArgs, InvalidPort
-from tgbot.handlers.helpers import check_int
+from tgbot.handlers.base import CheckerTargetPortHandler, NotEnoughArgs, InvalidPort, parse_host_port
 from tgbot.handlers.metrics import push_status_metric
 from tgbot.middlewares.throttling import rate_limit
 
@@ -29,20 +29,15 @@ class TCPCheckerHandler(CheckerTargetPortHandler):
     async def handler(self, message: Message):
         await super(TCPCheckerHandler, self).handler(message)
 
-    def process_args(self, text: str) -> list:
+    def process_args(self, text: str) -> Tuple[str, int]:
         args = text.split(' ', 1)
         if len(args) != 2:
             raise NotEnoughArgs()
         host = args[1]
-        if ":" in host:
-            host, port = host.rsplit(":", 1)
-        elif " " in host:
-            host, port = host.split(maxsplit=1)
-        else:
+        host, port = parse_host_port(host, -1)
+        if port == -1:
             raise NotEnoughArgs()
-        if not check_int(port):
-            raise InvalidPort()
-        return [host, port]
+        return (host, port)
 
     async def prepare_message(self, res: Response):
         message, status = await self.message_std_vals(res)
