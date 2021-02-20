@@ -2,8 +2,8 @@ from aiogram.types import Message
 from typing import Union
 import ipaddress
 
-from tgbot.handlers.base import SimpleCommandHandler, NotEnoughArgs
-from tgbot.middlewares.throttling import rate_limit
+from ..base import SimpleCommandHandler, NotEnoughArgs
+from ...middlewares.throttling import rate_limit
 
 ipcalc_help_message = """
 ❓ Калькулятор IP подсетей.

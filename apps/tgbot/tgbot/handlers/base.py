@@ -1,7 +1,7 @@
 from aiogram.types import Message
 from typing import Tuple, Any, List
 
-from tgbot.nodes import nodes as all_nodes
+from ..nodes import nodes as all_nodes
 from httpx import Response
 from aiogram.bot import Bot
 from datetime import datetime
@@ -9,7 +9,7 @@ from core.coretypes import APINodeInfo
 from .helpers import send_api_requests
 from .errors import NotEnoughArgs, InvalidPort, LocalhostForbidden
 from .validators import BaseValidator, LocalhostValidator
-from tgbot.middlewares.throttling import rate_limit
+from ..middlewares.throttling import rate_limit
 from loguru import logger
 from uuid import uuid4
 from time import time

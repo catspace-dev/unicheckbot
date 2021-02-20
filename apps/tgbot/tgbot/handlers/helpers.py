@@ -5,8 +5,8 @@ from ipaddress import ip_address
 from contextlib import suppress
 from loguru import logger
 from aiogram.bot import Bot
-from tgbot.handlers.metrics import push_api_request_status
-from tgbot.config import NOTIFICATION_BOT_TOKEN, NOTIFICATION_USERS
+from .metrics import push_api_request_status
+from ..config import NOTIFICATION_BOT_TOKEN, NOTIFICATION_USERS
 from traceback import format_exc
 import asyncio
 

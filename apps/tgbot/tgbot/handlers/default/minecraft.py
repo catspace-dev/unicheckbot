@@ -1,8 +1,8 @@
 from core.coretypes import ResponseStatus, ErrorPayload, MinecraftResponse
 from httpx import Response
 
-from tgbot.handlers.base import CheckerTargetPortHandler, process_args_for_host_port
-from tgbot.handlers.metrics import push_status_metric
+from ..base import CheckerTargetPortHandler, process_args_for_host_port
+from ..metrics import push_status_metric
 
 minecraft_help_message = """
 ❓ Получает статистику о Minecraft сервере

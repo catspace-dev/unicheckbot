@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from whois_vu.api import WhoisSource
 from whois_vu.errors import IncorrectZone, QueryNotMatchRegexp
 
-from tgbot.handlers.whois_zones import ZONES
-from tgbot.handlers.base import SimpleCommandHandler
-from tgbot.handlers.errors import NotEnoughArgs, LocalhostForbidden
-from tgbot.middlewares.throttling import rate_limit
+from ..whois_zones import ZONES
+from ..base import SimpleCommandHandler
+from ..errors import NotEnoughArgs, LocalhostForbidden
+from ...middlewares.throttling import rate_limit
 
 whois_help_message = """
 ❓ Вернёт информацию о домене.

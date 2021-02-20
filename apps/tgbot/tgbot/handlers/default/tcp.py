@@ -3,9 +3,9 @@ from aiogram.types import Message
 from core.coretypes import ResponseStatus, ErrorPayload, PortResponse
 from httpx import Response
 
-from tgbot.handlers.base import CheckerTargetPortHandler, NotEnoughArgs, InvalidPort, parse_host_port
-from tgbot.handlers.metrics import push_status_metric
-from tgbot.middlewares.throttling import rate_limit
+from ..base import CheckerTargetPortHandler, NotEnoughArgs, InvalidPort, parse_host_port
+from ..metrics import push_status_metric
+from ...middlewares.throttling import rate_limit
 
 tcp_help_message = """
 ❓ Производит проверку TCP порта, открыт ли он или нет

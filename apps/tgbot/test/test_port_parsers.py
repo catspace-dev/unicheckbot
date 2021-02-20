@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from ..handlers.default.tcp import TCPCheckerHandler
-from ..handlers.base import process_args_for_host_port,\
+from tgbot.handlers.default.tcp import TCPCheckerHandler
+from tgbot.handlers.base import process_args_for_host_port,\
                             NotEnoughArgs, InvalidPort
 
 

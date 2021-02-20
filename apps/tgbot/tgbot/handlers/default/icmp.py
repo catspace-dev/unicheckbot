@@ -3,7 +3,7 @@ from httpx import Response
 from core.coretypes import ErrorPayload, ICMPCheckerResponse, ResponseStatus
 from ..base import CheckerBaseHandler, NotEnoughArgs, LocalhostForbidden
 from ..metrics import push_status_metric
-from tgbot.middlewares.throttling import rate_limit
+from ...middlewares.throttling import rate_limit
 
 icmp_help_message = """
 ❓ Производит проверку хоста по протоколу ICMP.

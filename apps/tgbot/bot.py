@@ -5,8 +5,8 @@ from tortoise import Tortoise
 from tortoise.exceptions import DBConnectionError
 from loguru import logger
 from asyncio import sleep
-import config
-import handlers
+import tgbot.config as config
+import tgbot.handlers as handlers
 
 storage = MemoryStorage()
 telegram_bot = Bot(token=config.TELEGRAM_BOT_TOKEN)
