@@ -1,5 +1,4 @@
 from unittest import TestCase
-import asyncio
 
 from ..handlers.default.tcp import TCPCheckerHandler
 from ..handlers.base import process_args_for_host_port,\
