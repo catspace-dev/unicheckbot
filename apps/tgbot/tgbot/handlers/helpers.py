@@ -11,15 +11,6 @@ from traceback import format_exc
 import asyncio
 
 
-def check_int(value) -> bool:
-    try:
-        int(value)
-    except ValueError:
-        return False
-    else:
-        return True
-
-
 async def send_api_request(client: AsyncClient, endpoint: str, data: dict, node: APINode):
     try:
         data['token'] = node.token
