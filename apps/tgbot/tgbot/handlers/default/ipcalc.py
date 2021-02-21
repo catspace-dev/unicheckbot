@@ -1,9 +1,10 @@
-from aiogram.types import Message
-from typing import Union
 import ipaddress
+from typing import Union
 
-from tgbot.handlers.base import SimpleCommandHandler, NotEnoughArgs
-from tgbot.middlewares.throttling import rate_limit
+from aiogram.types import Message
+
+from ...middlewares.throttling import rate_limit
+from ..base import NotEnoughArgs, SimpleCommandHandler
 
 ipcalc_help_message = """
 ❓ Калькулятор IP подсетей.
@@ -24,7 +25,7 @@ class IPCalcCommandHandler(SimpleCommandHandler):
     @rate_limit
     async def handler(self, message: Message):
         try:
-            args = await self.process_args(message.text)
+            args = self.process_args(message.text)
             network = ipaddress.ip_network(args[1], False)
         except NotEnoughArgs:
             await message.answer(self.help_message, parse_mode='Markdown')
@@ -34,7 +35,7 @@ class IPCalcCommandHandler(SimpleCommandHandler):
             msg = await self.prepare_message(network)
             await message.answer(msg)
 
-    async def process_args(self, text: str) -> list:
+    def process_args(self, text: str) -> list:
         args = text.split()
         if len(args) == 1:
             raise NotEnoughArgs

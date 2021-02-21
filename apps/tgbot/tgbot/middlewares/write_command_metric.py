@@ -1,7 +1,8 @@
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.types import Message
-from tgbot.handlers.metrics import push_metric
-from tgbot.models import User, UserCheckRequests
+
+from ..handlers.metrics import push_metric
+from ..models import User, UserCheckRequests
 
 
 class WriteCommandMetric(BaseMiddleware):

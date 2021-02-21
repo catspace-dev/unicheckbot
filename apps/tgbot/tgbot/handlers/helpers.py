@@ -1,23 +1,16 @@
-from httpx import AsyncClient, Timeout, Response
-from typing import List, Callable
-from core.coretypes import APINode
-from ipaddress import ip_address
-from contextlib import suppress
-from loguru import logger
-from aiogram.bot import Bot
-from tgbot.handlers.metrics import push_api_request_status
-from tgbot.config import NOTIFICATION_BOT_TOKEN, NOTIFICATION_USERS
-from traceback import format_exc
 import asyncio
+from contextlib import suppress
+from ipaddress import ip_address
+from traceback import format_exc
+from typing import Callable, List
 
+from aiogram.bot import Bot
+from core.coretypes import APINode
+from httpx import AsyncClient, Response, Timeout
+from loguru import logger
 
-def check_int(value) -> bool:
-    try:
-        int(value)
-    except ValueError:
-        return False
-    else:
-        return True
+from ..config import NOTIFICATION_BOT_TOKEN, NOTIFICATION_USERS
+from .metrics import push_api_request_status
 
 
 async def send_api_request(client: AsyncClient, endpoint: str, data: dict, node: APINode):

@@ -1,7 +1,8 @@
 from aiogram.types import Message
-from tgbot.models.user import User
-from tgbot.middlewares.throttling import rate_limit
-from tgbot.middlewares.userdata import userdata_required
+
+from ...middlewares.throttling import rate_limit
+from ...middlewares.userdata import userdata_required
+from ...models.user import User
 
 start_message = """
 

@@ -1,9 +1,10 @@
 from aiogram.types import Message
-from httpx import Response
 from core.coretypes import ErrorPayload, ICMPCheckerResponse, ResponseStatus
-from ..base import CheckerBaseHandler, NotEnoughArgs, LocalhostForbidden
+from httpx import Response
+
+from ...middlewares.throttling import rate_limit
+from ..base import CheckerBaseHandler, LocalhostForbidden, NotEnoughArgs
 from ..metrics import push_status_metric
-from tgbot.middlewares.throttling import rate_limit
 
 icmp_help_message = """
 ❓ Производит проверку хоста по протоколу ICMP.
@@ -23,7 +24,7 @@ class ICMPCheckerHandler(CheckerBaseHandler):
     @rate_limit
     async def handler(self, message: Message):
         try:
-            args = await self.process_args(message.text)
+            args = self.process_args(message.text)
         except NotEnoughArgs:
             return await message.answer(icmp_help_message, parse_mode="Markdown")
         except LocalhostForbidden:
@@ -31,13 +32,13 @@ class ICMPCheckerHandler(CheckerBaseHandler):
         else:
             await self.check(message.chat.id, message.bot, dict(target=args[0], target_fq=args[0]))
 
-    async def process_args(self, text: str) -> list:
+    def process_args(self, text: str) -> list:
         args = text.split()
         if len(args) == 1:
             raise NotEnoughArgs()
         if len(args) >= 2:
             target = args[1]
-            await self.validate_target(target)
+            self.validate_target(target)
             return [target]
 
     async def prepare_message(self, res: Response):

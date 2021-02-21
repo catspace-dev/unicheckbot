@@ -1,5 +1,7 @@
+from core.coretypes import (HTTP_EMOJI, ErrorPayload, HttpCheckerResponse,
+                            ResponseStatus)
 from httpx import Response
-from core.coretypes import ResponseStatus, HTTP_EMOJI, HttpCheckerResponse, ErrorPayload
+
 from ..base import CheckerTargetPortHandler, process_args_for_host_port
 from ..metrics import push_status_metric
 
@@ -22,7 +24,7 @@ class WebCheckerHandler(CheckerTargetPortHandler):
     def __init__(self):
         super().__init__()
 
-    async def process_args(self, text: str) -> list:
+    def process_args(self, text: str) -> list:
         return process_args_for_host_port(text, 80)
 
     async def prepare_message(self, res: Response):

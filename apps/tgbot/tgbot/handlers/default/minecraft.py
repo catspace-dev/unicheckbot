@@ -1,8 +1,8 @@
-from core.coretypes import ResponseStatus, ErrorPayload, MinecraftResponse
+from core.coretypes import ErrorPayload, MinecraftResponse, ResponseStatus
 from httpx import Response
 
-from tgbot.handlers.base import CheckerTargetPortHandler, process_args_for_host_port
-from tgbot.handlers.metrics import push_status_metric
+from ..base import CheckerTargetPortHandler, process_args_for_host_port
+from ..metrics import push_status_metric
 
 minecraft_help_message = """
 ❓ Получает статистику о Minecraft сервере
@@ -24,7 +24,7 @@ class MinecraftCheckerHandler(CheckerTargetPortHandler):
     def __init__(self):
         super().__init__()
 
-    async def process_args(self, text: str) -> list:
+    def process_args(self, text: str) -> list:
         return process_args_for_host_port(text, 25565)
 
     async def prepare_message(self, res: Response):

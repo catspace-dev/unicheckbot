@@ -1,12 +1,14 @@
+from asyncio import sleep
+
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from tgbot.middlewares import UserMiddleware, WriteCommandMetric, LoggingMiddleware, ThrottlingMiddleware
+from loguru import logger
 from tortoise import Tortoise
 from tortoise.exceptions import DBConnectionError
-from loguru import logger
-from asyncio import sleep
-import config
-import handlers
+
+from . import config, handlers
+from .middlewares import (LoggingMiddleware, ThrottlingMiddleware,
+                          UserMiddleware, WriteCommandMetric)
 
 storage = MemoryStorage()
 telegram_bot = Bot(token=config.TELEGRAM_BOT_TOKEN)
@@ -42,5 +44,10 @@ async def on_startup(disp: Dispatcher):
     disp.middleware.setup(LoggingMiddleware())
     disp.middleware.setup(UserMiddleware())
 
-if __name__ == '__main__':
+
+def main():
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+
+
+if __name__ == '__main__':
+    main()

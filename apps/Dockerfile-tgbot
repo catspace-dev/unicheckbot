@@ -8,6 +8,6 @@ RUN apk update \
     && apk add gcc python3-dev musl-dev libffi-dev openssl-dev make cargo
 
 COPY . .
-WORKDIR tgbot/tgbot
+WORKDIR tgbot
 RUN pip install --upgrade pip; pip install poetry; poetry config virtualenvs.create false; poetry install
-CMD poetry shell; python bot.py
+CMD poetry run tgbot

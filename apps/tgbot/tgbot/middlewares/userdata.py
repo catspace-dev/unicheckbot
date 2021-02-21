@@ -1,8 +1,8 @@
 from aiogram.dispatcher.handler import current_handler
 from aiogram.dispatcher.middlewares import BaseMiddleware
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import CallbackQuery, Message
 
-from tgbot.models import User
+from ..models import User
 
 
 def userdata_required(func):

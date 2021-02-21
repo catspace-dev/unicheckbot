@@ -1,6 +1,9 @@
-from aioinflux import InfluxDBClient
 from typing import Dict
-from tgbot.config import INFLUX_DB, INFLUX_HOST, INFLUX_PORT, INFLUX_PASSWORD, INFLUX_USERNAME
+
+from aioinflux import InfluxDBClient
+
+from ..config import (INFLUX_DB, INFLUX_HOST, INFLUX_PASSWORD, INFLUX_PORT,
+                      INFLUX_USERNAME)
 
 
 async def push_metric(measurement, tags: Dict, fields: Dict):

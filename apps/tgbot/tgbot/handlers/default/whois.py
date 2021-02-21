@@ -1,15 +1,16 @@
+from dataclasses import dataclass
 from typing import Optional
 
-from whois import whois, parser
 from aiogram.types import Message
-from dataclasses import dataclass
 from whois_vu.api import WhoisSource
 from whois_vu.errors import IncorrectZone, QueryNotMatchRegexp
 
-from tgbot.handlers.whois_zones import ZONES
-from tgbot.handlers.base import SimpleCommandHandler
-from tgbot.handlers.errors import NotEnoughArgs, LocalhostForbidden
-from tgbot.middlewares.throttling import rate_limit
+from whois import parser, whois
+
+from ...middlewares.throttling import rate_limit
+from ..base import SimpleCommandHandler
+from ..errors import LocalhostForbidden, NotEnoughArgs
+from ..whois_zones import ZONES
 
 whois_help_message = """
 ❓ Вернёт информацию о домене.
@@ -116,7 +117,7 @@ class WhoisCommandHandler(SimpleCommandHandler):
     @rate_limit
     async def handler(self, message: Message):
         try:
-            args = await self.process_args(message.text)
+            args = self.process_args(message.text)
         except NotEnoughArgs:
             await message.answer(no_domain_text, parse_mode='Markdown')
         except LocalhostForbidden:
@@ -124,13 +125,13 @@ class WhoisCommandHandler(SimpleCommandHandler):
         else:
             await message.answer(create_whois_message(args[0]), parse_mode='html')
 
-    async def process_args(self, text: str) -> list:
+    def process_args(self, text: str) -> list:
         args = text.split()
         if len(args) == 1:
             raise NotEnoughArgs
         if len(args) >= 2:
             host = args[1]
-            await self.validate_target(host)
+            self.validate_target(host)
             return [host]  # only domain name
 
     async def prepare_message(self) -> str:
