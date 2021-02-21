@@ -1,12 +1,14 @@
+from asyncio import sleep
+
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from .middlewares import UserMiddleware, WriteCommandMetric, LoggingMiddleware, ThrottlingMiddleware
+from loguru import logger
 from tortoise import Tortoise
 from tortoise.exceptions import DBConnectionError
-from loguru import logger
-from asyncio import sleep
-from . import config
-from . import handlers
+
+from . import config, handlers
+from .middlewares import (LoggingMiddleware, ThrottlingMiddleware,
+                          UserMiddleware, WriteCommandMetric)
 
 storage = MemoryStorage()
 telegram_bot = Bot(token=config.TELEGRAM_BOT_TOKEN)

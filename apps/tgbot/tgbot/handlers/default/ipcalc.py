@@ -1,9 +1,10 @@
-from aiogram.types import Message
-from typing import Union
 import ipaddress
+from typing import Union
 
-from ..base import SimpleCommandHandler, NotEnoughArgs
+from aiogram.types import Message
+
 from ...middlewares.throttling import rate_limit
+from ..base import NotEnoughArgs, SimpleCommandHandler
 
 ipcalc_help_message = """
 ❓ Калькулятор IP подсетей.

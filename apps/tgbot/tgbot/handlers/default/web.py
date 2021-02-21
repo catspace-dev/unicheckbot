@@ -1,5 +1,7 @@
+from core.coretypes import (HTTP_EMOJI, ErrorPayload, HttpCheckerResponse,
+                            ResponseStatus)
 from httpx import Response
-from core.coretypes import ResponseStatus, HTTP_EMOJI, HttpCheckerResponse, ErrorPayload
+
 from ..base import CheckerTargetPortHandler, process_args_for_host_port
 from ..metrics import push_status_metric
 

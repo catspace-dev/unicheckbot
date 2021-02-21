@@ -1,12 +1,12 @@
 from aiogram import Dispatcher
 
+from .icmp import ICMPCheckerHandler
+from .ipcalc import IPCalcCommandHandler
+from .minecraft import MinecraftCheckerHandler
 from .start import start_cmd
+from .tcp import TCPCheckerHandler
 from .web import WebCheckerHandler
 from .whois import WhoisCommandHandler
-from .icmp import ICMPCheckerHandler
-from .tcp import TCPCheckerHandler
-from .minecraft import MinecraftCheckerHandler
-from .ipcalc import IPCalcCommandHandler
 
 
 def setup(dp: Dispatcher):

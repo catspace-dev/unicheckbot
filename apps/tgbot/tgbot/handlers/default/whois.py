@@ -1,15 +1,16 @@
+from dataclasses import dataclass
 from typing import Optional
 
-from whois import whois, parser
 from aiogram.types import Message
-from dataclasses import dataclass
 from whois_vu.api import WhoisSource
 from whois_vu.errors import IncorrectZone, QueryNotMatchRegexp
 
-from ..whois_zones import ZONES
-from ..base import SimpleCommandHandler
-from ..errors import NotEnoughArgs, LocalhostForbidden
+from whois import parser, whois
+
 from ...middlewares.throttling import rate_limit
+from ..base import SimpleCommandHandler
+from ..errors import LocalhostForbidden, NotEnoughArgs
+from ..whois_zones import ZONES
 
 whois_help_message = """
 ❓ Вернёт информацию о домене.

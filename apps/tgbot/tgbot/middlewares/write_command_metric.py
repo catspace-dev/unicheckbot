@@ -1,5 +1,6 @@
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.types import Message
+
 from ..handlers.metrics import push_metric
 from ..models import User, UserCheckRequests
 

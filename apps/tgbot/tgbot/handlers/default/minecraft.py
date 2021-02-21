@@ -1,4 +1,4 @@
-from core.coretypes import ResponseStatus, ErrorPayload, MinecraftResponse
+from core.coretypes import ErrorPayload, MinecraftResponse, ResponseStatus
 from httpx import Response
 
 from ..base import CheckerTargetPortHandler, process_args_for_host_port

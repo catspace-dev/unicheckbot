@@ -1,6 +1,7 @@
-from .errors import LocalhostForbidden
-from ipaddress import ip_address
 from contextlib import suppress
+from ipaddress import ip_address
+
+from .errors import LocalhostForbidden
 
 
 class BaseValidator:
