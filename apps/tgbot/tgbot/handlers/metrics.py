@@ -7,7 +7,9 @@ from ..config import (INFLUX_DB, INFLUX_HOST, INFLUX_PASSWORD, INFLUX_PORT,
 
 
 async def push_metric(measurement, tags: Dict, fields: Dict):
-    try:
+    if INFLUX_HOST is None:
+        pass
+    else:
         point = {
             'measurement': measurement,
             'tags': tags,
@@ -22,9 +24,6 @@ async def push_metric(measurement, tags: Dict, fields: Dict):
             mode='async'
         ) as client:
             await client.write(point)
-    except Exception as e:
-        print(e)
-        pass
 
 
 async def push_api_request_status(status_code: int, endpoint: str):
