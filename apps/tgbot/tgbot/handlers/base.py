@@ -16,8 +16,8 @@ from .helpers import send_api_requests
 from .validators import BaseValidator, LocalhostValidator
 
 header = "Отчет о проверке хоста:" \
-         "\n\n— Хост: {target_fq}"\
-         f"\n— Дата проверки: {datetime.now():%d.%m.%y в %H:%M} (MSK)"  # TODO: Get timezone
+         "\n\n— Хост: {0}"\
+         "\n— Дата проверки: {1} (MSK)"  # TODO: Get timezone
 
 
 class SimpleCommandHandler:
@@ -53,7 +53,11 @@ class CheckerBaseHandler(SimpleCommandHandler):
         ts = time()
         ident = uuid4().hex
         logger.info(f"User {chat_id} started check {ident}")
-        rsp_msg = await bot.send_message(chat_id, header.format(**data))
+        # format header
+        rsp_msg = await bot.send_message(
+            chat_id,
+            header.format(data.get('target_fq'), datetime.now().strftime("%d.%m.%y в %H:%M"))
+        )
         iter_keys = 1  # because I can't use enumerate
         # using generators for magic...
         async for res in send_api_requests(self.api_endpoint, data, all_nodes):
