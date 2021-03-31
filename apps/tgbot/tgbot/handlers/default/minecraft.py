@@ -8,13 +8,13 @@ minecraft_help_message = """
 ❓ Получает статистику о Minecraft сервере
 
 Использование:
- `/minecraft <hostname> <port>`
- `/minecraft <hostname>:<port>`
- `/minecraft <hostname>` - автоматически выставит порт 25565
+ `/mc <hostname> <port>`
+ `/mc <hostname>:<port>`
+ `/mc <hostname>` - автоматически выставит порт 25565
 """
 
 
-invalid_port = """❗Неправильный порт. Напишите /minecraft чтобы увидеть справку к данному способу проверки."""
+invalid_port = """❗Неправильный порт. Напишите /mc чтобы увидеть справку к данному способу проверки."""
 
 
 class MinecraftCheckerHandler(CheckerTargetPortHandler):

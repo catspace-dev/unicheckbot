@@ -10,7 +10,7 @@ icmp_help_message = """
 ❓ Производит проверку хоста по протоколу ICMP.
 
 Использование:
- `/icmp <target>` 
+ `/ping <target>` 
 """
 
 
