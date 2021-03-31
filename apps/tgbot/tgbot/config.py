@@ -20,3 +20,6 @@ MYSQL_USER = os.getenv("MYSQL_USER")
 MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
 MYSQL_PORT = os.getenv("MYSQL_PORT", 3306)
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "unicheckbot")
+
+# Sentry
+SENTRY_DSN = os.getenv("SENTRY_DSN")

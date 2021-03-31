@@ -36,4 +36,8 @@ start_message = """
 @userdata_required
 @rate_limit
 async def start_cmd(msg: Message, user: User):
-    await msg.answer(start_message.replace("%name%", msg.from_user.full_name), parse_mode='markdown', disable_web_page_preview=True)
+    await msg.answer(
+        start_message.replace("%name%", msg.from_user.full_name),
+        parse_mode='markdown',
+        disable_web_page_preview=True
+    )

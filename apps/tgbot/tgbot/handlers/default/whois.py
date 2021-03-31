@@ -4,6 +4,7 @@ from typing import Optional
 from aiogram.types import Message
 from whois_vu.api import WhoisSource
 from whois_vu.errors import IncorrectZone, QueryNotMatchRegexp
+from sentry_sdk import capture_exception
 
 from whois import parser, whois
 
@@ -72,7 +73,8 @@ def create_whois_message(domain: str) -> str:
         domain_info = whois_request(domain)
     except parser.PywhoisError:
         return f"❗ Домен {domain} свободен или не был найден."
-    except IncorrectZone:
+    except IncorrectZone as e:
+        capture_exception(e)
         return incorrect_domain.format(domain=domain)
     except QueryNotMatchRegexp:
         return incorrect_domain.format(domain=domain)

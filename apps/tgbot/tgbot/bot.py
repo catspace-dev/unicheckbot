@@ -1,3 +1,12 @@
+import sentry_sdk
+from tgbot import config
+
+if config.SENTRY_DSN:
+
+    sentry_sdk.init(
+        dsn=config.SENTRY_DSN,
+    )
+
 from asyncio import sleep
 
 from aiogram import Bot, Dispatcher, executor
@@ -6,9 +15,10 @@ from loguru import logger
 from tortoise import Tortoise
 from tortoise.exceptions import DBConnectionError
 
-from . import config, handlers
-from .middlewares import (LoggingMiddleware, ThrottlingMiddleware,
-                          UserMiddleware, WriteCommandMetric)
+from . import handlers
+from .middlewares import (
+    LoggingMiddleware, ThrottlingMiddleware, UserMiddleware, WriteCommandMetric
+)
 
 storage = MemoryStorage()
 telegram_bot = Bot(token=config.TELEGRAM_BOT_TOKEN)

@@ -1,13 +1,12 @@
 import asyncio
-from contextlib import suppress
-from ipaddress import ip_address
 from traceback import format_exc
-from typing import Callable, List
+from typing import List
 
 from aiogram.bot import Bot
 from core.coretypes import APINode
 from httpx import AsyncClient, Response, Timeout
 from loguru import logger
+from sentry_sdk import capture_exception
 
 from ..config import NOTIFICATION_BOT_TOKEN, NOTIFICATION_USERS
 from .metrics import push_api_request_status
@@ -20,13 +19,19 @@ async def send_api_request(client: AsyncClient, endpoint: str, data: dict, node:
             f"{node.address}/{endpoint}", params=data
         )
     except Exception as e:
+        exc_id = capture_exception(e)
         # Remove token from log data
         data.pop('token', None)
         logger.error(f"Node {node.address} got Error. Data: {data}. Endpoint: {endpoint}. Full exception: {e}")
         result = Response(500)
-        await send_message_to_admins(f"Node {node.address} got error: `{e}`. \n"
-                                     f"Data: `{data}`, Endpoint: `{endpoint}`\n"
-                                     f"Full exception: ```{format_exc()}```")
+        if exc_id:
+            await send_message_to_admins(f"Node {node.address} got error: `{e}`. \n"
+                                         f"Data: `{data}`, Endpoint: `{endpoint}`\n"
+                                         f"Exc sentry: {exc_id}")
+        else:
+            await send_message_to_admins(f"Node {node.address} got error: `{e}`. \n"
+                                         f"Data: `{data}`, Endpoint: `{endpoint}`\n"
+                                         f"Full exception: ```{format_exc()}```")
         await push_api_request_status(
             result.status_code,
             endpoint
