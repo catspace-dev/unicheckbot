@@ -47,11 +47,12 @@ async def send_api_requests(endpoint: str, data: dict, nodes: List[APINode]):
             yield res
 
 
-async def send_message_to_admins(message: str):
+async def send_message_to_admins(message: str) -> None:
     if NOTIFICATION_BOT_TOKEN:
         bot = Bot(token=NOTIFICATION_BOT_TOKEN)
         for user in NOTIFICATION_USERS:
             logger.info(f"Sended notification to {user}")
             await bot.send_message(user, message, parse_mode='Markdown')
+        await bot.close()
     else:
         logger.warning(f"Notificator bot token not setted. Skipping send notifications to admin")
