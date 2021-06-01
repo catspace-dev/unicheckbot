@@ -12,8 +12,9 @@ from loguru import logger
 from ..middlewares.throttling import rate_limit
 from ..nodes import nodes as all_nodes
 from .errors import InvalidPort, LocalhostForbidden, NotEnoughArgs
-from .helpers import send_api_requests
+from .helpers import send_api_requests, send_message_to_admins
 from .validators import BaseValidator, LocalhostValidator
+from ..config import NOTIFY_CHECKS
 
 header = "Отчет о проверке хоста:" \
          "\n\n— Хост: {0}"\
@@ -68,6 +69,12 @@ class CheckerBaseHandler(SimpleCommandHandler):
                 node_formatted_response = await self.prepare_message(res)
                 rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n\n{iter_keys}. {node_formatted_response}")
             iter_keys = iter_keys + 1
+
+        if NOTIFY_CHECKS:
+            notify_text = f"**User {chat_id} issued check: {self.api_endpoint} for {data['target_fq']}**\n\n" \
+                   f"```{rsp_msg.text}```"
+            await send_message_to_admins(notify_text)
+
         logger.info(f"User {chat_id} ended check {ident}")
         await rsp_msg.edit_text(rsp_msg.text + f"\n\nПроверка завершена❗")
         te = time()

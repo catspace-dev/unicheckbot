@@ -13,6 +13,8 @@ INFLUX_DB = os.getenv("INFLUX_DB", None)
 # Notifications
 NOTIFICATION_BOT_TOKEN = os.getenv("NOTIFICATION_BOT_TOKEN")
 NOTIFICATION_USERS = os.getenv("NOTIFICATION_USERS", "").split(",")
+# Send all checks result to NOTIFICATION_USERS
+NOTIFY_CHECKS = True
 
 # Mysql params
 MYSQL_HOST = os.getenv("MYSQL_HOST", None)  # if none, use sqlite db
