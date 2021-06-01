@@ -27,7 +27,7 @@ start_message = """
 🚩 [Этот бот с открытым с исходным кодом](https://github.com/catspace-dev/unicheckbot)
 🚩 [Помогите улучшить бота](https://github.com/catspace-dev/unicheckbot/issues) или [расскажите об ошибке](https://github.com/catspace-dev/unicheckbot/issues)
 
-Разработчик: [kiriharu](http://t.me/kiriharu)
+Разработчик: [kiriharu](https://t.me/kiriharu)
 При поддержке: [SpaceCore.pro](https://spacecore.pro/)
 
 """

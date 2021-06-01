@@ -12,8 +12,9 @@ from loguru import logger
 from ..middlewares.throttling import rate_limit
 from ..nodes import nodes as all_nodes
 from .errors import InvalidPort, LocalhostForbidden, NotEnoughArgs
-from .helpers import send_api_requests
+from .helpers import send_api_requests, send_message_to_admins
 from .validators import BaseValidator, LocalhostValidator
+from ..config import NOTIFY_CHECKS
 
 header = "Отчет о проверке хоста:" \
          "\n\n— Хост: {0}"\
@@ -48,10 +49,13 @@ class CheckerBaseHandler(SimpleCommandHandler):
     def __init__(self):
         pass
 
-    async def check(self, chat_id: int, bot: Bot, data: dict):
+    async def check(self, msg: Message, data: dict):
         # TODO: start check and end check metrics with ident, chat_id and api_endpoint
         ts = time()
         ident = uuid4().hex
+        # refactoring goes brr
+        chat_id = msg.chat.id
+        bot = msg.bot
         logger.info(f"User {chat_id} started check {ident}")
         # format header
         rsp_msg = await bot.send_message(
@@ -68,6 +72,13 @@ class CheckerBaseHandler(SimpleCommandHandler):
                 node_formatted_response = await self.prepare_message(res)
                 rsp_msg = await rsp_msg.edit_text(rsp_msg.text + f"\n\n{iter_keys}. {node_formatted_response}")
             iter_keys = iter_keys + 1
+
+        if NOTIFY_CHECKS:
+            notify_text = f"**User {msg.from_user.full_name} (@{msg.from_user.username}) ({chat_id}) issued check: " \
+                          f"{self.api_endpoint} for {data['target_fq']}**\n\n" \
+                   f"```\n{rsp_msg.text}\n```"
+            await send_message_to_admins(notify_text)
+
         logger.info(f"User {chat_id} ended check {ident}")
         await rsp_msg.edit_text(rsp_msg.text + f"\n\nПроверка завершена❗")
         te = time()
@@ -101,8 +112,7 @@ class CheckerTargetPortHandler(CheckerBaseHandler):
             logger.info(f"User {message.from_user.id} got LocalhostForbidden error")
             return await message.answer(self.localhost_forbidden_message, parse_mode="Markdown")
         await self.check(
-            message.chat.id,
-            message.bot,
+            message,
             dict(target=args[0], port=args[1], target_fq=f"{args[0]}:{args[1]}")
         )
 
