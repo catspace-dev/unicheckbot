@@ -30,7 +30,7 @@ class ICMPCheckerHandler(CheckerBaseHandler):
         except LocalhostForbidden:
             return await message.answer(self.localhost_forbidden_message, parse_mode="Markdown")
         else:
-            await self.check(message.chat.id, message.bot, dict(target=args[0], target_fq=args[0]))
+            await self.check(message, dict(target=args[0], target_fq=args[0]))
 
     def process_args(self, text: str) -> list:
         args = text.split()
